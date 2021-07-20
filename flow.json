@@ -1,0 +1,51 @@
+{
+	"emulators": {
+		"default": {
+			"port": 3569,
+			"serviceAccount": "emulator-account"
+		}
+	},
+	"contracts": {
+		"NonFungibleToken": {
+			"source": "./contracts/NonFungibleToken.cdc",
+			"aliases": {
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20",
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"DigitalContentAsset": "./contracts/DigitalContentAsset.cdc",
+        "DCAMarket": "./contracts/DCAMarket.cdc",
+        "DCAPermission": "./contracts/DCAPermission.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"keys": "117e3cbd39447693aba0aa4e02ed1677a8c3fae7eec866f83736436998e86032"
+		},
+		"testnet-account": {
+			"address": "${FLOW_ADDRESS}",
+			"keys": "${FLOW_PRIVATE_KEY}"
+		}	  
+	},
+	"deployments": {
+		"testnet": {
+			"testnet-account": [
+				"DigitalContentAsset",
+				"DCAPermission"
+			]
+		},
+		"emulator": {
+			"emulator-account": [
+				"NonFungibleToken",
+				"DigitalContentAsset",
+				"DCAPermission"
+			]
+		}
+	}
+}
