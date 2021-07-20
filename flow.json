@@ -1,0 +1,61 @@
+{
+	"emulators": {
+		"default": {
+			"port": 3569,
+			"serviceAccount": "emulator-account"
+		}
+	},
+	"contracts": {
+		"NonFungibleToken": {
+			"source": "./contracts/NonFungibleToken.cdc",
+			"aliases": {
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20",
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"DigitalContentAsset": "./contracts/DigitalContentAsset.cdc",
+        "DCAMarket": "./contracts/DCAMarket.cdc",
+        "DCAPermission": "./contracts/DCAPermission.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"keys": "117e3cbd39447693aba0aa4e02ed1677a8c3fae7eec866f83736436998e86032"
+		},
+		"testnet-account": {
+			"address": "${FLOW_ADDRESS}",
+			"keys": "${FLOW_PRIVATE_KEY}"
+		},
+		"emulator-user-1": {
+			"address": "01cf0e2f2f715450",
+			"keys": "795000496783844d5a06df5c139c1198d809adfac7100cdde5036f4081b1e580",
+			"pubkey": "d639bac6783d665ac8b1a7cea3df2b69108edec94097bec8764538fbc07278f5fad8da55f9beb3eb324d1e68ed8792e6656d55888756fd8ce936b8f25e8712f7"
+		},
+        "emulator-user-2": {
+			"address": "179b6b1cb6755e31",
+			"keys": "152a7e0a7b1bd4c0f873a7ae5aff7b342f582ee4e245af6dba62a26b0d5a7cbb",
+			"pubkey": "ba4602277bfa9f46a4155f1c078f3fa5864273a8233f5397c3a0cde84423ada984dca63a1e7fb75c9dfb70adbcdbce10c4c5b89f9139c2b67f5602d9098f7b30"
+		}
+	},
+	"deployments": {
+		"testnet": {
+			"testnet-account": [
+				"DigitalContentAsset",
+				"DCAPermission"
+			]
+		},
+		"emulator": {
+			"emulator-account": [
+				"NonFungibleToken",
+				"DigitalContentAsset",
+				"DCAPermission"
+			]
+		}
+	}
+}

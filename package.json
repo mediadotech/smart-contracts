@@ -1,0 +1,32 @@
+{
+  "name": "smart-contracts",
+  "version": "1.0.0",
+  "description": "Flow contract for Digital Content Assets",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mediadotech/smart-contracts.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/mediadotech/smart-contracts/issues"
+  },
+  "homepage": "https://github.com/mediadotech/smart-contracts#readme",
+  "private": true,
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@types/node": "^16.0.0",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.5",
+    "wait-port": "^0.2.9"
+  },
+  "dependencies": {}
+}
