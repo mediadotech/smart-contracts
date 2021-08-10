@@ -22,7 +22,7 @@ transaction(recipient: Address, args: [[AnyStruct]]) {
 
             assert(!refIds.contains(refId), message: "NFT with duplicate refId is not issued")
 
-            let item = DigitalContentAsset.getItem(itemId)!
+            let item = DigitalContentAsset.getItem(itemId) ?? panic("That itemId does not exist")
             let itemVersion = item.version
 
             let token <- self.minterRef.mintToken(
