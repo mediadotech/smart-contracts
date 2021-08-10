@@ -16,22 +16,22 @@ afterAll(() => {
     emulator?.terminate()
 })
 
-test('Non-admin cannot rewrite items', async () => {
+// 直接Itemを書き換えることはできない
+test('Item cannot be rewritten directly', async () => {
     emulator.createItem({itemId: 'test-item-id-1', version: 5, limit: 10, metadata: {itemName: 'Test Item 1@v5'}})
 
-    emulator.exec(`flow transactions send transactions/abuse/inject_item_version.cdc \
-        --args-json '${json([
-            string('test-item-id-1'),
-            uint32(4),
-            dicss({
-                itemName: 'Test Item 1@v4 (injected!!)'
-            }),
-            uint32(10000)
-        ])}' \
-        --signer emulator-user-1`) // bu Non-admin
+    emulator.signer('emulator-user-1').transactions(
+        'transactions/abuse/inject_item_version.cdc',
+        string('test-item-id-1'),
+        uint32(4),
+        dicss({
+            itemName: 'Test Item 1@v4 (injected!!)'
+        }),
+        uint32(10000)
+    )
 
     expect(
-        emulator.exec(`flow scripts execute scripts/get_items.cdc`)
+        emulator.scripts('scripts/get_items.cdc')
     ).toEqual(array([
         struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
             itemId: string('test-item-id-1'),
@@ -50,20 +50,20 @@ test('Non-admin cannot rewrite items', async () => {
     ]))
 })
 
-test('Non-admin cannot rewrite item.mintedCount', async () => {
+// 直接item.mintedCountを書き換えることはできない
+test('Item.mintedCount cannot be rewritten directly', async () => {
     emulator.createItem({ itemId: 'test-item-id-2', version: 5, limit: 10, metadata: {}})
 
     expect(() =>
-        emulator.exec(`flow transactions send transactions/abuse/update_item_minted_count.cdc \
-            --args-json '${json([
-                string('test-item-id-2'),
-                uint32(10000)
-            ])}' \
-            --signer emulator-user-1`) // bu Non-admin
+        emulator.signer('emulator-user-1').transactions(
+            'transactions/abuse/update_item_minted_count.cdc',
+            string('test-item-id-2'),
+            uint32(10000)
+        )
     ).toThrow('error: cannot assign to `mintedCount`: field has public access')
 
     expect(
-        emulator.exec(`flow scripts execute scripts/get_item.cdc --arg String:test-item-id-2`)
+        emulator.scripts('scripts/get_item.cdc', string('test-item-id-2'))
     ).toEqual(optional(
         struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
             itemId: string('test-item-id-2'),

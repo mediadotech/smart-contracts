@@ -1,13 +1,14 @@
 import { address, bool, dicaa, dicss, json, optional, string, struct, uint32 } from "../utils/args"
 import { createEmulator, FlowEmulator } from "../utils/emulator"
-import flowConfig from '../../flow.json'
+import { accounts } from '../../flow.json'
 
-const OPERATOR_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
+const OPERATOR_ADDRESS = accounts["emulator-account"].address
 
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
     emulator.transactions('transactions/permission/init_permission_receiver.cdc')
+    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
 })
@@ -16,14 +17,20 @@ afterAll(() => {
     emulator?.terminate()
 })
 
-// AdminはItemを作ることができる
+// OperatorはItemを作ることができる
 test('Operator can create Items', async () => {
-    emulator.exec(`flow transactions send transactions/operator/create_item.cdc \
-        --args-json '${json([string('test-item-id-1'), uint32(1), uint32(0), dicss({itemName: 'Test Item 1'}), bool(false)])}'
-    `)
+    emulator.transactions(
+        'transactions/operator/create_item.cdc',
+        string('test-item-id-1'),
+        uint32(1),
+        uint32(0),
+        dicss({itemName: 'Test Item 1'}),
+        bool(false)
+    )
 
-    expect(emulator.exec(
-        'flow scripts execute scripts/get_item.cdc --arg String:test-item-id-1'
+    expect(emulator.scripts(
+        'scripts/get_item.cdc',
+        string('test-item-id-1')
     )).toEqual(optional(struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
         itemId: string('test-item-id-1'),
         versions: dicaa([
@@ -40,15 +47,39 @@ test('Operator can create Items', async () => {
     })))
 })
 
+// OperatorではないユーザーはItemを作ることができない
+test('Operator can create Items', async () => {
+    expect(() =>
+        emulator.signer('emulator-user-1').transactions(
+            'transactions/operator/create_item.cdc',
+            string('test-item-id-10'),
+            uint32(1),
+            uint32(0),
+            dicss({itemName: 'Test Item 1'}),
+            bool(false)
+        )
+    ).toThrowError('error: pre-condition failed: Roles not given cannot be borrowed')
+})
+
 // 重複して同じitemIdのItemをつくることはできない
-test('Operator cannot duplicate Items with the same itemId', async () => {
-    emulator.exec(`flow transactions send transactions/operator/create_item.cdc \
-        --args-json '${json([string('test-item-id-2'), uint32(1), uint32(0), dicss({itemName: 'Test Item 1'}), bool(true)])}'
-    `)
+test('Users who are not Operators cannot create Items', async () => {
+    emulator.transactions(
+        'transactions/operator/create_item.cdc',
+        string('test-item-id-2'),
+        uint32(1),
+        uint32(0),
+        dicss({itemName: 'Test Item 1'}),
+        bool(true)
+    )
 
     expect(() =>
-        emulator.exec(`flow transactions send transactions/operator/create_item.cdc \
-            --args-json '${json([string('test-item-id-2'), uint32(1), uint32(0), dicss({itemName: 'Test Item 1'}), bool(true)])}'
-        `)
+        emulator.transactions(
+            'transactions/operator/create_item.cdc',
+            string('test-item-id-2'),
+            uint32(1),
+            uint32(0),
+            dicss({itemName: 'Test Item 1'}),
+            bool(true)
+        )
     ).toThrow('Admin cannot create existing items')
 })
