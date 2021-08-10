@@ -1,11 +1,11 @@
 import { execSync, spawn } from 'child_process'
 import { SIGTERM } from 'constants'
-import flowConfig from '../../flow.json'
+import { accounts } from '../../flow.json'
 import { address, dicss, json, string, uint32, bool } from './args'
 import waitPort from 'wait-port'
 
 
-type AccountName = keyof typeof flowConfig.accounts
+type AccountName = keyof typeof accounts
 
 const HTTP_PORT_OFFSET = 4511 // 3570 + 4511 = 8081
 
@@ -16,7 +16,15 @@ export interface FlowEmulator {
     readonly error?: Error
     readonly port: number
     exec(subCommand: string): any
-    transactions(path: string, ...args: any[]): object
+    transactions(path: string, ...args: any[]): {
+        authorizers: string
+        events: any[]
+        id: string
+        payer: string
+        payload: string
+        status: string
+        [key: string]: any
+    }
     scripts(path: string, ...args: any[]): object
     createItem(args: {
         itemId: string, version: number, limit: number, metadata?: {[key: string]: string}, active?: boolean
@@ -24,10 +32,14 @@ export interface FlowEmulator {
     mintToken(args: {
         recipient: AccountName, refId: string, itemId: string, metadata: {[key: string]: string}
     }): number
+    readonly options: string[]
+    withOptions(...args: string[]): FlowEmulator
+    signer(signer: AccountName): FlowEmulator
 }
 
 export async function createEmulator(): Promise<FlowEmulator> {
     const port = 3569 + Number(process.env.JEST_WORKER_ID || 1)
+    const host = `localhost:${port}`
     let error
     let stdout = ''
     let stderr = ''
@@ -54,7 +66,7 @@ export async function createEmulator(): Promise<FlowEmulator> {
         const subCommand = flowCommand.slice(5)
         stdout = ''
         stderr = ''
-        const command = 'flow --host localhost:' + port + ' --output json ' + subCommand
+        const command = 'flow --host ' + host + ' --output json ' + subCommand
         const json = execSync(command).toString()
         const result = JSON.parse(json)
         if (result.error) {
@@ -65,14 +77,13 @@ export async function createEmulator(): Promise<FlowEmulator> {
 
     try {
         await waitPort({ port, output: 'silent' }).then(open => { if (!open) { throw new Error(port + ' did not open') } })
+        execFlow('flow accounts create --key ' + accounts['emulator-user-1'].pubkey)
+        execFlow('flow accounts create --key ' + accounts['emulator-user-2'].pubkey)
+        execFlow('flow transactions send transactions/minter/add_public_key.cdc --arg String:' + accounts['minter-1'].key.pubkey)
+        execFlow('flow transactions send transactions/minter/add_public_key.cdc --arg String:' + accounts['minter-2'].key.pubkey)
         execFlow('flow project deploy')
-        execFlow('flow accounts create --key ' + flowConfig.accounts['emulator-user-1'].pubkey)
-        execFlow('flow accounts create --key ' + flowConfig.accounts['emulator-user-2'].pubkey)
 
-        const transactions = (path, ...args) => execFlow(`flow transactions send ${path} --args-json '${json(args)}'`)
-        const scripts = (path, ...args) => execFlow(`flow scripts execute ${path} --args-json '${json(args)}'`)
-
-        return {
+        const emulator: FlowEmulator = {
             terminate: () => child.kill(SIGTERM),
             get stdout() {
                 return stdout
@@ -87,17 +98,37 @@ export async function createEmulator(): Promise<FlowEmulator> {
                 return port
             },
             exec: execFlow,
-            transactions,
-            scripts,
+            transactions(path, ...args) {
+                return execFlow(`flow transactions send ${path} --args-json '${json(args)}' ${this.options.join(' ')}`)
+            },
+            scripts(path, ...args) {
+                return execFlow(`flow scripts execute ${path} --args-json '${json(args)}'`)
+            },
             createItem({ itemId, version = 1, limit = 1, metadata = {}, active = true }) {
-                return transactions('transactions/operator/create_item.cdc', string(itemId), uint32(version), uint32(limit), dicss(metadata), bool(active))
+                return this.transactions('transactions/operator/create_item.cdc', string(itemId), uint32(version), uint32(limit), dicss(metadata), bool(active))
             },
             mintToken({recipient, refId, itemId, metadata}) {
-                return transactions('transactions/minter/mint_token.cdc', address('0x' + flowConfig.accounts[recipient].address), string(refId), string(itemId), dicss(metadata))
+                return this.transactions('transactions/minter/mint_token.cdc', address('0x' + accounts[recipient].address), string(refId), string(itemId), dicss(metadata))
+            },
+            options: [],
+            withOptions(...options) {
+                return {
+                    ...emulator,
+                    options
+                }
+            },
+            signer(signer) {
+                return {
+                    ...emulator,
+                    options: [...this.options, '--signer', signer]
+                }
             }
         }
+        return emulator
     } catch (err) {
         child.kill(SIGTERM)
         throw err
     }
 }
+
+jest.setTimeout(60000)

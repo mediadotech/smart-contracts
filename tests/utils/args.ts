@@ -6,6 +6,19 @@ export function uint8(value: number) {
     return { type: 'UInt8', value: value.toString() }
 }
 
+export function enumUint8(id: string, value: number) {
+    return {
+        type: 'Enum',
+        value: {
+            fields: [{
+                name: 'rawValue',
+                value: uint8(value)
+            }],
+            id
+        }
+    }
+}
+
 export function uint32(value: number) {
     return { type: 'UInt32', value: value.toString() }
 }
@@ -41,7 +54,7 @@ export function dicaa(kvs: {key: any, value: any}[]) {
 export function address(value: string) {
     return {
         type: 'Address',
-        value: value
+        value: typeof value == 'string' && !value.startsWith('0x') ? '0x' + value : value
     }
 }
 
