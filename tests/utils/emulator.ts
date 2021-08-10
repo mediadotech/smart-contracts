@@ -130,5 +130,3 @@ export async function createEmulator(): Promise<FlowEmulator> {
         throw err
     }
 }
-
-jest.setTimeout(60000)
