@@ -41,6 +41,28 @@
 			"address": "179b6b1cb6755e31",
 			"keys": "152a7e0a7b1bd4c0f873a7ae5aff7b342f582ee4e245af6dba62a26b0d5a7cbb",
 			"pubkey": "ba4602277bfa9f46a4155f1c078f3fa5864273a8233f5397c3a0cde84423ada984dca63a1e7fb75c9dfb70adbcdbce10c4c5b89f9139c2b67f5602d9098f7b30"
+		},
+		"minter-1": {
+			"address": "f8d6e0586b0a20c7",
+			"key": {
+                "type": "hex",
+                "index": 1,
+                "signatureAlgorithm": "ECDSA_P256",
+                "hashAlgorithm": "SHA3_256",
+                "privateKey": "948a03f367cf2586f0e85dd6c3bc28d24ff7371993521473440a320a62e1b447",
+                "pubkey": "e52f77245470ada70fd0c52b2b1625f871e925ee8b06cad5fde3f8dd7ff876e370155f8654b2bc49a048761fe2a4b278b8bf594a9479350987d39ce80b0dd87d"
+            }
+		},
+        "minter-2": {
+			"address": "f8d6e0586b0a20c7",
+            "key": {
+                "type": "hex",
+                "index": 2,
+                "signatureAlgorithm": "ECDSA_P256",
+                "hashAlgorithm": "SHA3_256",
+                "privateKey": "ee9e4e7648f5e53c1bb25b2e332c49cd6fc181f5e2baec796bff6d4167526c5a",
+                "pubkey": "ce27f48abc57d60c5a76654e49db5d8adbb1fe772b25442ed5213a77a715dbad3e6743096ac45c7025e203f2c1abdfda691b528d44391141df4875edd00fe91f"
+            }
 		}
 	},
 	"deployments": {
