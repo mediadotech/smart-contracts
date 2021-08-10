@@ -7,8 +7,9 @@ const OPERATOR_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
-    emulator.transactions('transactions/user/init_account.cdc --signer emulator-user-1')
+    emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
     emulator.transactions('transactions/permission/init_permission_receiver.cdc')
+    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(OPERATOR_ADDRESS))
@@ -89,4 +90,14 @@ test('Metadata cannot be updated retroactively', () => {
     expect(() =>
         emulator.transactions('transactions/operator/update_item_metadata.cdc', string('test-item-id-4'), uint32(4), dicss({ 'versionName': 'Four' }))
     ).toThrow('Version must be greater than or equal to the current version')
+})
+
+// OperatorでないユーザーはItemのmetadataを更新できない
+test('Non-Operator users cannot update Item metadata', () => {
+    const itemId = 'test-item-id-5'
+    emulator.createItem({itemId, version: 1, limit: 1 })
+
+    expect(() =>
+        emulator.signer('emulator-user-1').transactions('transactions/operator/update_item_metadata.cdc', string(itemId), uint32(1), dicss({ 'exInfo': 'metadata from other user' }))
+    ).toThrow('error: pre-condition failed: Roles not given cannot be borrowed')
 })

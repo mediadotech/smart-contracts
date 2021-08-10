@@ -13,7 +13,7 @@ transaction(recipient: Address, refId: String, itemId: String, metadata: { Strin
     }
 
     execute {
-        let item = DigitalContentAsset.getItem(itemId)!
+        let item = DigitalContentAsset.getItem(itemId) ?? panic("That itemId does not exist")
 
         let itemId = itemId
         let itemVersion = item.version

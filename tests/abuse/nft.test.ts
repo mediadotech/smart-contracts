@@ -12,8 +12,8 @@ beforeAll(async () => {
     emulator.transactions('transactions/admin/add_operator.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(MINTER_ADDRESS))
 
-    emulator.exec('flow transactions send transactions/user/init_account.cdc --signer emulator-user-1')
-    emulator.exec('flow transactions send transactions/user/init_account.cdc --signer emulator-user-2')
+    emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
+    emulator.signer('emulator-user-2').transactions('transactions/user/init_account.cdc')
     emulator.createItem({
         itemId: 'test-item-id-1', version: 1, limit: 10, metadata: {}
     })
@@ -25,30 +25,33 @@ afterAll(() => {
 
 function mint(user: keyof typeof flowConfig.accounts, refId: string): number {
     const targetAddress = '0x' + flowConfig.accounts[user].address
-    let result = emulator!.exec(`flow transactions send transactions/minter/mint_token.cdc \
-        --args-json '${json([address(targetAddress), string(refId), string('test-item-id-1'), dicss({})])}'
-    `)
-    if (result.error) {
-        throw new Error(result.error)
-    }
+    let result = emulator.transactions(
+        'transactions/minter/mint_token.cdc',
+        address(targetAddress),
+        string(refId),
+        string('test-item-id-1'),
+        dicss({})
+    )
     const nftID = Number(result.events[0].values.value.fields[0].value.value)
     return nftID
 }
 
-test('User cannot rewrite NFT of others', () => {
+// ユーザーは他者のNFTを書き換えることはできない
+test('Users cannot rewrite NFTs of others', () => {
     const nftID = mint('emulator-user-1', 'test-ref-id-1')
 
     const ownerAddress = '0x' + flowConfig.accounts["emulator-user-1"].address
 
-    expect(
-        emulator.exec(`flow transactions send transactions/abuse/update_nft_data.cdc \
-            --args-json '${json([address(ownerAddress), uint64(nftID)])}' \
-            --signer emulator-user-2
-        `).error
-    ).toBeUndefined()
+    expect(() =>
+        emulator.signer('emulator-user-2').transactions(
+            'transactions/abuse/update_nft_data.cdc',
+            address(ownerAddress),
+            uint64(nftID)
+        )
+    ).not.toThrowError()
 
     expect(
-        emulator.exec(`flow scripts execute scripts/get_token.cdc --arg Address:${ownerAddress} --arg UInt64:${nftID}`)
+        emulator.scripts('scripts/get_token.cdc', address(ownerAddress), uint64(nftID))
     ).toEqual(optional(optional(resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
         uuid: uint64(expect.any(String)),
         id: uint64(1),

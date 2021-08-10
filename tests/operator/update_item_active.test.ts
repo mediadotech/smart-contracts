@@ -7,8 +7,9 @@ const MINTER_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
-    emulator.transactions('transactions/user/init_account.cdc --signer emulator-user-1')
+    emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
     emulator.transactions('transactions/permission/init_permission_receiver.cdc')
+    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/user/init_account.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(MINTER_ADDRESS))
@@ -74,4 +75,17 @@ test('Items updated to deactive cannot be mint', async () => {
             dicss({})
         )
     ).toThrowError('error: pre-condition failed: Only active items can be mint')
+})
+
+// OperatorではないユーザーはItemをactiveにできない
+test('Non-Operator users cannot activate Item', async () => {
+    emulator.createItem({itemId: 'test-item-id-5', version: 1, limit: 10, active: false})
+
+    expect(() =>
+        emulator.signer('emulator-user-1').transactions(
+            'transactions/operator/update_item_active.cdc',
+            string('test-item-id-5'),
+            bool(true)
+        )
+    ).toThrowError('error: pre-condition failed: Roles not given cannot be borrowed')
 })
