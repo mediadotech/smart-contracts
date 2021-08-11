@@ -25,11 +25,11 @@ pub contract DigitalContentAsset: NonFungibleToken {
 
     pub struct Item {
         pub let itemId: String
-        pub let versions: { UInt32: ItemData }
         pub var version: UInt32
         pub var mintedCount: UInt32
         pub var limit: UInt32
         pub var active: Bool
+        access(self) let versions: { UInt32: ItemData }
 
         init(itemId: String, version: UInt32, metadata: { String: String }, limit: UInt32, active: Bool) {
             self.itemId = itemId
@@ -79,6 +79,10 @@ pub contract DigitalContentAsset: NonFungibleToken {
             return self.versions[self.version]!
         }
 
+        pub fun getVersions():  { UInt32: ItemData } {
+            return self.versions
+        }
+
         pub fun isVersionLocked(): Bool {
             return self.mintedCount >= self.versions[self.version]!.originSerialNumber
         }
@@ -94,13 +98,17 @@ pub contract DigitalContentAsset: NonFungibleToken {
 
     pub struct ItemData {
         pub let version: UInt32
-        pub let metadata: { String: String }
         pub let originSerialNumber: UInt32
+        access(self) let metadata: { String: String }
 
         init(version: UInt32, metadata: { String: String }, originSerialNumber: UInt32) {
             self.version = version
             self.metadata = metadata
             self.originSerialNumber = originSerialNumber
+        }
+
+        pub fun getMetadata(): { String: String } {
+            return self.metadata
         }
     }
 
@@ -144,7 +152,7 @@ pub contract DigitalContentAsset: NonFungibleToken {
         pub let serialNumber: UInt32
         pub let itemId: String
         pub let itemVersion: UInt32
-        pub let metadata: { String: String }
+        access(self) let metadata: { String: String }
 
         init(
             serialNumber: UInt32,
@@ -156,6 +164,10 @@ pub contract DigitalContentAsset: NonFungibleToken {
             self.itemId = itemId
             self.itemVersion = itemVersion
             self.metadata = metadata
+        }
+
+        pub fun getMetadata(): { String: String } {
+            return self.metadata
         }
     }
 
