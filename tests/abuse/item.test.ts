@@ -35,17 +35,17 @@ test('Item cannot be rewritten directly', async () => {
     ).toEqual(array([
         struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
             itemId: string('test-item-id-1'),
-            versions: dicaa([{key: uint32(5), value:
-                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
-                    version: uint32(5),
-                    metadata: dicss({ itemName: 'Test Item 1@v5' }),
-                    originSerialNumber: uint32(1)
-                })
-            }]),
             version: uint32(5),
             mintedCount: uint32(0),
             limit: uint32(10),
-            active: bool(true)
+            active: bool(true),
+            versions: dicaa([{key: uint32(5), value:
+                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                    version: uint32(5),
+                    originSerialNumber: uint32(1),
+                    metadata: dicss({ itemName: 'Test Item 1@v5' })
+                })
+            }])
         })
     ]))
 })
@@ -67,17 +67,48 @@ test('Item.mintedCount cannot be rewritten directly', async () => {
     ).toEqual(optional(
         struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
             itemId: string('test-item-id-2'),
-            versions: dicaa([{key: uint32(5), value:
-                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
-                    version: uint32(5),
-                    metadata: dicss({ }),
-                    originSerialNumber: uint32(1)
-                })
-            }]),
             version: uint32(5),
             mintedCount: uint32(0),
             limit: uint32(10),
-            active: bool(true)
+            active: bool(true),
+            versions: dicaa([{key: uint32(5), value:
+                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                    version: uint32(5),
+                    originSerialNumber: uint32(1),
+                    metadata: dicss({ })
+                })
+            }])
+        })
+    ))
+})
+
+// 直接Itemのmetadataを書き換えることはできない
+test('Item metadata cannot be rewritten directly', async () => {
+    emulator.createItem({itemId: 'test-item-id-3', version: 1, limit: 0, metadata: {}})
+
+    emulator.signer('emulator-user-1').transactions(
+        'transactions/abuse/inject_item_metadata.cdc',
+        string('test-item-id-3'),
+        string('injected_key'),
+        string('injected_value')
+    )
+
+    expect(
+        emulator.scripts('scripts/get_item.cdc', string('test-item-id-3'))
+    ).toEqual(optional(
+        struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
+            itemId: string('test-item-id-3'),
+            version: uint32(1),
+            mintedCount: uint32(0),
+            limit: uint32(0),
+            active: bool(true),
+            versions: dicaa([{key: uint32(1), value:
+                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                    version: uint32(1),
+                    originSerialNumber: uint32(1),
+                    metadata: dicss({ })
+                })
+            }])
         })
     ))
 })
