@@ -2,12 +2,12 @@ import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
 
 transaction {
     prepare(acct: AuthAccount) {
-        if acct.borrow<&DigitalContentAsset.Collection>(from: /storage/DCACollection) != nil {
+        if acct.borrow<&DigitalContentAsset.Collection>(from: DigitalContentAsset.collectionStoragePath) != nil {
             panic("The account has already been initialized.")
         }
 
         let collection <- DigitalContentAsset.createEmptyCollection() as! @DigitalContentAsset.Collection
-        acct.save(<-collection, to: /storage/DCACollection)
-        acct.link<&{DigitalContentAsset.CollectionPublic}>(/public/DCACollection, target: /storage/DCACollection)
+        acct.save(<-collection, to: DigitalContentAsset.collectionStoragePath)
+        acct.link<&{DigitalContentAsset.CollectionPublic}>(DigitalContentAsset.collectionPublicPath, target: DigitalContentAsset.collectionStoragePath)
     }
 }
