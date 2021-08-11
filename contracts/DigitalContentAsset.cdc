@@ -7,6 +7,9 @@ pub contract DigitalContentAsset: NonFungibleToken {
     pub event Deposit(id: UInt64, to: Address?)
     pub event Withdraw(id: UInt64, from: Address?)
 
+    pub let collectionStoragePath: StoragePath
+    pub let collectionPublicPath: PublicPath
+
     pub event TokenCreated(
         id: UInt64,
         refId: String,
@@ -319,8 +322,10 @@ pub contract DigitalContentAsset: NonFungibleToken {
     }
 
     init() {
+        self.collectionStoragePath = /storage/DCACollection
+        self.collectionPublicPath = /public/DCACollection
+
         self.totalSupply = 0
         self.items = {}
-
     }
 }
