@@ -20,7 +20,7 @@ transaction(itemId: String, version: UInt32, limit: UInt32, metadata: { String: 
         DigitalContentAsset.getItem(itemId)!.version == version: "version must match"
         DigitalContentAsset.getItem(itemId)!.mintedCount == 0: "mintedCount must be zero"
         !DigitalContentAsset.getItem(itemId)!.isVersionLocked(): "item version must not be locked"
-        equalsStringDictionary(DigitalContentAsset.getItem(itemId)!.getData().metadata, metadata): "metadata must match"
+        equalsStringDictionary(DigitalContentAsset.getItem(itemId)!.getData().getMetadata(), metadata): "metadata must match"
     }
 }
 
