@@ -7,9 +7,9 @@ transaction(recipient: Address, args: [[AnyStruct]]) {
     let collectionRef: &{DigitalContentAsset.CollectionPublic}
 
     prepare(account: AuthAccount) {
-        self.minterRef = account.borrow<&DCAPermission.Holder>(from: /storage/DCAPermission)?.borrowMinter(by: account)
+        self.minterRef = account.borrow<&DCAPermission.Holder>(from: DCAPermission.receiverStoragePath)?.borrowMinter(by: account)
             ?? panic("No minter in storage")
-        self.collectionRef = getAccount(recipient).getCapability<&{DigitalContentAsset.CollectionPublic}>(/public/DCACollection).borrow()
+        self.collectionRef = getAccount(recipient).getCapability<&{DigitalContentAsset.CollectionPublic}>(DigitalContentAsset.collectionPublicPath).borrow()
             ?? panic("Cannot borrow a reference to the DCA collection")
     }
 

@@ -1,7 +1,7 @@
 import DigitalContentAsset from "../contracts/DigitalContentAsset.cdc"
 
 pub fun main(account: Address): [&DigitalContentAsset.NFT] {
-    let collectionRef = getAccount(account).getCapability(/public/DCACollection).borrow<&{DigitalContentAsset.CollectionPublic}>()
+    let collectionRef = getAccount(account).getCapability(DigitalContentAsset.collectionPublicPath).borrow<&{DigitalContentAsset.CollectionPublic}>()
         ?? panic("Could not get public DCA collection reference")
 
     let refs: [&DigitalContentAsset.NFT] = []

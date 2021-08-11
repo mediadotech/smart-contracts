@@ -11,6 +11,9 @@ pub contract DCAPermission {
     pub event PermissionAdded(target: Address, role: UInt8)
     pub event PermissionRemoved(target: Address, role: UInt8)
 
+    pub let receiverStoragePath: StoragePath
+    pub let receiverPublicPath: PublicPath
+
     pub resource Owner {
         pub fun addPermission(address: Address, as: Role) {
             DCAPermission.addPermission(address, as: as)
@@ -213,6 +216,9 @@ pub contract DCAPermission {
     }
 
     init() {
+        self.receiverStoragePath = /storage/DCAPermission
+        self.receiverPublicPath = /public/DCAPermission
+
         self.permissions = {}
         self.account.save<@Owner>(<- create Owner(), to: /storage/DCAOwner)
         self.account.save<@Admin>(<- create Admin(), to: /storage/DCAAdmin)

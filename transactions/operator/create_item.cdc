@@ -5,7 +5,7 @@ transaction(itemId: String, version: UInt32, limit: UInt32, metadata: { String: 
     let operatorRef: &DCAPermission.Operator
 
     prepare(account: AuthAccount) {
-        self.operatorRef = account.borrow<&DCAPermission.Holder>(from: /storage/DCAPermission)?.borrowOperator(by: account)
+        self.operatorRef = account.borrow<&DCAPermission.Holder>(from: DCAPermission.receiverStoragePath)?.borrowOperator(by: account)
             ?? panic("No operator in storage")
     }
 

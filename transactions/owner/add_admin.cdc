@@ -8,7 +8,7 @@ transaction(receiver: Address) {
     prepare(owner: AuthAccount) {
         self.ownerRef = owner.borrow<&DCAPermission.Owner>(from: /storage/DCAOwner)
             ?? panic("No owner resource in storage")
-        self.receiverRef = getAccount(receiver).getCapability(/public/DCAPermission).borrow<&AnyResource{DCAPermission.Receiver}>()
+        self.receiverRef = getAccount(receiver).getCapability(DCAPermission.receiverPublicPath).borrow<&AnyResource{DCAPermission.Receiver}>()
             ?? panic("No permission receiver in storage")
     }
 

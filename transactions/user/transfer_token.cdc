@@ -5,12 +5,12 @@ transaction(id: UInt64, to: Address) {
     let transferToken: @NonFungibleToken.NFT
 
     prepare(from: AuthAccount) {
-        let fromRef = from.borrow<&DigitalContentAsset.Collection>(from: /storage/DCACollection)!
+        let fromRef = from.borrow<&DigitalContentAsset.Collection>(from: DigitalContentAsset.collectionStoragePath)!
         self.transferToken <- fromRef.withdraw(withdrawID: id)
     }
 
     execute {
-        let toRef = getAccount(to).getCapability(/public/DCACollection).borrow<&{DigitalContentAsset.CollectionPublic}>()!
+        let toRef = getAccount(to).getCapability(DigitalContentAsset.collectionPublicPath).borrow<&{DigitalContentAsset.CollectionPublic}>()!
         toRef.deposit(token: <- self.transferToken)
     }
 }

@@ -6,9 +6,9 @@ transaction(receiver: Address) {
     let receiverRef: &AnyResource{DCAPermission.Receiver}
 
     prepare(account: AuthAccount) {
-        self.adminRef = account.borrow<&DCAPermission.Holder>(from: /storage/DCAPermission)?.borrowAdmin(by: account)
+        self.adminRef = account.borrow<&DCAPermission.Holder>(from: DCAPermission.receiverStoragePath)?.borrowAdmin(by: account)
             ?? panic("No admin in storage")
-        self.receiverRef = getAccount(receiver).getCapability(/public/DCAPermission).borrow<&AnyResource{DCAPermission.Receiver}>()
+        self.receiverRef = getAccount(receiver).getCapability(DCAPermission.receiverPublicPath).borrow<&AnyResource{DCAPermission.Receiver}>()
             ?? panic("No permission receiver in storage")
     }
 
