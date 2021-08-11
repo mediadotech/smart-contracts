@@ -6,6 +6,6 @@ transaction(address: Address, nftID: UInt64) {
     execute {
         let collectionRef = getAccount(address).getCapability(/public/DCACollection).borrow<&{DigitalContentAsset.CollectionPublic}>()!
         let tokenRef = collectionRef.borrowDCAToken(id: nftID)!
-        tokenRef.getData().metadata.insert(key: "injected", "injected!!")
+        tokenRef.getData().getMetadata().insert(key: "injected", "injected!!")
     }
 }

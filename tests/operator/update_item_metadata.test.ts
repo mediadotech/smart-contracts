@@ -27,17 +27,17 @@ test('Non-minted version of metadata can be updated with the same version', () =
     expect(emulator.scripts('scripts/get_item.cdc', string('test-item-id-1'))).toEqual(optional(
         struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
             itemId: string('test-item-id-1'),
-            versions: dicaa([{
-                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
-                    version: uint32(1),
-                    metadata: dicss({ 'versionName': 'First (overwritten)'}),
-                    originSerialNumber: uint32(1)
-                })
-            }]),
             version: uint32(1),
             mintedCount: uint32(0),
             limit: uint32(1),
-            active: bool(true)
+            active: bool(true),
+            versions: dicaa([{
+                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                    version: uint32(1),
+                    originSerialNumber: uint32(1),
+                    metadata: dicss({ 'versionName': 'First (overwritten)'})
+                })
+            }])
         })
     ))
 })
@@ -62,23 +62,23 @@ test('Minted version of metadata can be overridden with newer version of metadat
     expect(emulator.scripts('scripts/get_item.cdc', string('test-item-id-3'))).toEqual(optional(
         struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
             itemId: string('test-item-id-3'),
+            version: uint32(2),
+            mintedCount: uint32(1),
+            limit: uint32(1),
+            active: bool(true),
             versions: dicaa([{
                 key: uint32(1), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
                     version: uint32(1),
-                    metadata: dicss({ 'versionName': 'First'}),
-                    originSerialNumber: uint32(1)
+                    originSerialNumber: uint32(1),
+                    metadata: dicss({ 'versionName': 'First'})
                 })
             }, {
                 key: uint32(2), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
                     version: uint32(2),
-                    metadata: dicss({ 'versionName': 'Second'}),
-                    originSerialNumber: uint32(2)
+                    originSerialNumber: uint32(2),
+                    metadata: dicss({ 'versionName': 'Second'})
                 })
-            }]),
-            version: uint32(2),
-            mintedCount: uint32(1),
-            limit: uint32(1),
-            active: bool(true)
+            }])
         })
     ))
 })
