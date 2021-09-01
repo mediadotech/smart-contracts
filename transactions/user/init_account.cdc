@@ -1,13 +1,13 @@
-import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
+import FanTopToken from "../../contracts/FanTopToken.cdc"
 
 transaction {
     prepare(acct: AuthAccount) {
-        if acct.borrow<&DigitalContentAsset.Collection>(from: DigitalContentAsset.collectionStoragePath) != nil {
+        if acct.borrow<&FanTopToken.Collection>(from: FanTopToken.collectionStoragePath) != nil {
             panic("The account has already been initialized.")
         }
 
-        let collection <- DigitalContentAsset.createEmptyCollection() as! @DigitalContentAsset.Collection
-        acct.save(<-collection, to: DigitalContentAsset.collectionStoragePath)
-        acct.link<&{DigitalContentAsset.CollectionPublic}>(DigitalContentAsset.collectionPublicPath, target: DigitalContentAsset.collectionStoragePath)
+        let collection <- FanTopToken.createEmptyCollection() as! @FanTopToken.Collection
+        acct.save(<-collection, to: FanTopToken.collectionStoragePath)
+        acct.link<&{FanTopToken.CollectionPublic}>(FanTopToken.collectionPublicPath, target: FanTopToken.collectionStoragePath)
     }
 }

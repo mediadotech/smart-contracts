@@ -1,11 +1,11 @@
-import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
-import DCAPermission from "../../contracts/DCAPermission.cdc"
+import FanTopToken from "../../contracts/FanTopToken.cdc"
+import FanTopPermission from "../../contracts/FanTopPermission.cdc"
 
 transaction(receiver: Address) {
-    let adminRef: &DCAPermission.Admin
+    let adminRef: &FanTopPermission.Admin
 
     prepare(account: AuthAccount) {
-        self.adminRef = account.borrow<&DCAPermission.Holder>(from: DCAPermission.receiverStoragePath)?.borrowAdmin(by: account)
+        self.adminRef = account.borrow<&FanTopPermission.Holder>(from: FanTopPermission.receiverStoragePath)?.borrowAdmin(by: account)
             ?? panic("No admin in storage")
     }
 

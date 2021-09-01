@@ -68,7 +68,14 @@ export async function createEmulator(): Promise<FlowEmulator> {
         stderr = ''
         const command = 'flow --host ' + host + ' --output json ' + subCommand
         const json = execSync(command).toString()
-        const result = JSON.parse(json)
+
+        let result: any
+        try {
+            result = JSON.parse(json)
+        } catch (err) {
+            console.error(json)
+            throw err
+        }
         if (result.error) {
             throw new Error(result.error)
         }
@@ -79,8 +86,8 @@ export async function createEmulator(): Promise<FlowEmulator> {
         await waitPort({ port, output: 'silent' }).then(open => { if (!open) { throw new Error(port + ' did not open') } })
         execFlow('flow accounts create --key ' + accounts['emulator-user-1'].pubkey)
         execFlow('flow accounts create --key ' + accounts['emulator-user-2'].pubkey)
-        execFlow('flow transactions send transactions/minter/add_public_key.cdc --arg String:' + accounts['minter-1'].key.pubkey)
-        execFlow('flow transactions send transactions/minter/add_public_key.cdc --arg String:' + accounts['minter-2'].key.pubkey)
+        execFlow('flow transactions send transactions/minter/add_public_key.cdc ' + accounts['minter-1'].key.pubkey)
+        execFlow('flow transactions send transactions/minter/add_public_key.cdc ' + accounts['minter-2'].key.pubkey)
         execFlow('flow project deploy')
 
         const emulator: FlowEmulator = {

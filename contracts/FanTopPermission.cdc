@@ -1,6 +1,6 @@
-import DigitalContentAsset from "./DigitalContentAsset.cdc"
+import FanTopToken from "./FanTopToken.cdc"
 
-pub contract DCAPermission {
+pub contract FanTopPermission {
     pub enum Role: UInt8 {
         pub case owner
         pub case admin
@@ -16,11 +16,11 @@ pub contract DCAPermission {
 
     pub resource Owner {
         pub fun addPermission(address: Address, as: Role) {
-            DCAPermission.addPermission(address, as: as)
+            FanTopPermission.addPermission(address, as: as)
         }
 
         pub fun removePermission(address: Address, as: Role) {
-            DCAPermission.removePermission(address, as: as)
+            FanTopPermission.removePermission(address, as: as)
         }
 
         pub fun addAdmin(receiver: &AnyResource{Receiver}) {
@@ -29,7 +29,7 @@ pub contract DCAPermission {
             }
 
             let recipient = receiver.owner!.address
-            let capability = DCAPermission.addPermission(recipient, as: Role.admin) as! Capability<&Admin>
+            let capability = FanTopPermission.addPermission(recipient, as: Role.admin) as! Capability<&Admin>
 
             receiver.receive(as: Role.admin, capability: capability)
         }
@@ -45,7 +45,7 @@ pub contract DCAPermission {
             }
 
             let recipient = receiver.owner!.address
-            let capability = DCAPermission.addPermission(recipient, as: Role.operator) as! Capability<&Operator>
+            let capability = FanTopPermission.addPermission(recipient, as: Role.operator) as! Capability<&Operator>
 
             receiver.receive(as: Role.operator, capability: capability)
         }
@@ -56,17 +56,17 @@ pub contract DCAPermission {
             }
 
             let recipient = receiver.owner!.address
-            let capability = DCAPermission.addPermission(recipient, as: Role.minter) as! Capability<&Minter>
+            let capability = FanTopPermission.addPermission(recipient, as: Role.minter) as! Capability<&Minter>
 
             receiver.receive(as: Role.minter, capability: capability)
         }
 
         pub fun removeOperator(_ address: Address) {
-            DCAPermission.removePermission(address, as: Role.operator)
+            FanTopPermission.removePermission(address, as: Role.operator)
         }
 
         pub fun removeMinter(_ address: Address) {
-            DCAPermission.removePermission(address, as: Role.minter)
+            FanTopPermission.removePermission(address, as: Role.minter)
         }
 
         access(contract) init() {
@@ -75,19 +75,19 @@ pub contract DCAPermission {
 
     pub resource Operator {
         pub fun createItem(itemId: String, version: UInt32, limit: UInt32, metadata: { String: String }, active: Bool) {
-            DigitalContentAsset.createItem(itemId: itemId, version: version, limit: limit, metadata: metadata, active: active)
+            FanTopToken.createItem(itemId: itemId, version: version, limit: limit, metadata: metadata, active: active)
         }
 
         pub fun updateMetadata(itemId: String, version: UInt32, metadata: { String: String }) {
-            DigitalContentAsset.updateMetadata(itemId: itemId, version: version, metadata: metadata)
+            FanTopToken.updateMetadata(itemId: itemId, version: version, metadata: metadata)
         }
 
         pub fun updateLimit(itemId: String, limit: UInt32) {
-            DigitalContentAsset.updateLimit(itemId: itemId, limit: limit)
+            FanTopToken.updateLimit(itemId: itemId, limit: limit)
         }
 
         pub fun updateActive(itemId: String, active: Bool) {
-            DigitalContentAsset.updateActive(itemId: itemId, active: active)
+            FanTopToken.updateActive(itemId: itemId, active: active)
         }
 
         access(contract) init() {
@@ -95,8 +95,8 @@ pub contract DCAPermission {
     }
 
     pub resource Minter {
-        pub fun mintToken(refId: String, itemId: String, itemVersion: UInt32, metadata: { String: String }): @DigitalContentAsset.NFT {
-            return <- DigitalContentAsset.mintToken(refId: refId, itemId: itemId, itemVersion: itemVersion, metadata: metadata)
+        pub fun mintToken(refId: String, itemId: String, itemVersion: UInt32, metadata: { String: String }): @FanTopToken.NFT {
+            return <- FanTopToken.mintToken(refId: refId, itemId: itemId, itemVersion: itemVersion, metadata: metadata)
         }
 
         access(contract) init() {
@@ -128,7 +128,7 @@ pub contract DCAPermission {
                 self.isValid(): "Invalid holder cannot be used"
                 self.recipient == by.address: "Only the owner can borrow"
                 self.roles.containsKey(Role.admin): "Roles not given cannot be borrowed"
-                DCAPermission.hasPermission(by.address, as: Role.admin): "Roles without permission cannot be used"
+                FanTopPermission.hasPermission(by.address, as: Role.admin): "Roles without permission cannot be used"
             }
 
             let role = self.roles[Role.admin]!
@@ -140,7 +140,7 @@ pub contract DCAPermission {
                 self.isValid(): "Invalid holder cannot be used"
                 self.recipient == by.address: "Only the owner can borrow"
                 self.roles.containsKey(Role.operator): "Roles not given cannot be borrowed"
-                DCAPermission.hasPermission(by.address, as: Role.operator): "Roles without permission cannot be used"
+                FanTopPermission.hasPermission(by.address, as: Role.operator): "Roles without permission cannot be used"
             }
 
             let role = self.roles[Role.operator]!
@@ -152,7 +152,7 @@ pub contract DCAPermission {
                 self.isValid(): "Invalid holder cannot be used"
                 self.recipient == by.address: "Only the owner can borrow"
                 self.roles.containsKey(Role.minter): "Roles not given cannot be borrowed"
-                DCAPermission.hasPermission(by.address, as: Role.minter): "Roles without permission cannot be used"
+                FanTopPermission.hasPermission(by.address, as: Role.minter): "Roles without permission cannot be used"
             }
 
             let role = self.roles[Role.minter]!
@@ -170,14 +170,14 @@ pub contract DCAPermission {
 
     access(self) fun addPermission(_ address: Address, as: Role): Capability {
         pre {
-            !DCAPermission.hasPermission(address, as: as): "Existing roles are not added"
+            !FanTopPermission.hasPermission(address, as: as): "Existing roles are not added"
         }
 
-        if let permission = DCAPermission.permissions[address] {
+        if let permission = FanTopPermission.permissions[address] {
             permission.insert(key: as, true)
-            DCAPermission.permissions.insert(key: address, permission)
+            FanTopPermission.permissions.insert(key: address, permission)
         } else {
-            DCAPermission.permissions.insert(key: address, { as: true })
+            FanTopPermission.permissions.insert(key: address, { as: true })
         }
 
         emit PermissionAdded(target: address, role: as.rawValue)
@@ -187,14 +187,14 @@ pub contract DCAPermission {
 
     access(self) fun removePermission(_ address: Address, as: Role) {
         pre {
-            DCAPermission.hasPermission(address, as: as): "Roles that do not exist cannot be removed"
+            FanTopPermission.hasPermission(address, as: as): "Roles that do not exist cannot be removed"
         }
-        let permission = DCAPermission.permissions.remove(key: address)!
+        let permission = FanTopPermission.permissions.remove(key: address)!
 
         permission.remove(key: as)
 
         if permission.keys.length > 0 {
-            DCAPermission.permissions.insert(key: address, permission)
+            FanTopPermission.permissions.insert(key: address, permission)
         }
 
         emit PermissionRemoved(target: address, role: as.rawValue)
@@ -209,25 +209,25 @@ pub contract DCAPermission {
     }
 
     pub fun hasPermission(_ address: Address, as: Role): Bool {
-        if let permission = DCAPermission.permissions[address] {
+        if let permission = FanTopPermission.permissions[address] {
             return permission[as] ?? false
         }
         return false
     }
 
     init() {
-        self.receiverStoragePath = /storage/DCAPermission
-        self.receiverPublicPath = /public/DCAPermission
+        self.receiverStoragePath = /storage/FanTopPermission
+        self.receiverPublicPath = /public/FanTopPermission
 
         self.permissions = {}
-        self.account.save<@Owner>(<- create Owner(), to: /storage/DCAOwner)
-        self.account.save<@Admin>(<- create Admin(), to: /storage/DCAAdmin)
-        self.account.save<@Operator>(<- create Operator(), to: /storage/DCAOperator)
-        self.account.save<@Minter>(<- create Minter(), to: /storage/DCAMinter)
+        self.account.save<@Owner>(<- create Owner(), to: /storage/FanTopOwner)
+        self.account.save<@Admin>(<- create Admin(), to: /storage/FanTopAdmin)
+        self.account.save<@Operator>(<- create Operator(), to: /storage/FanTopOperator)
+        self.account.save<@Minter>(<- create Minter(), to: /storage/FanTopMinter)
 
         self.capabilities = {}
-        self.capabilities[Role.admin] = self.account.link<&Admin>(/private/DCAAdmin, target: /storage/DCAAdmin)!
-        self.capabilities[Role.operator] = self.account.link<&Operator>(/private/DCAOperator, target: /storage/DCAOperator)!
-        self.capabilities[Role.minter] = self.account.link<&Minter>(/private/DCAMinter, target: /storage/DCAMinter)!
+        self.capabilities[Role.admin] = self.account.link<&Admin>(/private/FanTopAdmin, target: /storage/FanTopAdmin)!
+        self.capabilities[Role.operator] = self.account.link<&Operator>(/private/FanTopOperator, target: /storage/FanTopOperator)!
+        self.capabilities[Role.minter] = self.account.link<&Minter>(/private/FanTopMinter, target: /storage/FanTopMinter)!
     }
 }

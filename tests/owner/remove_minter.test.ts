@@ -23,7 +23,7 @@ test('Owner can remove Minter', () => {
     ).toEqual({
         authorizers: '[f8d6e0586b0a20c7]',
         events: events(
-            event('A.f8d6e0586b0a20c7.DCAPermission.PermissionRemoved', {
+            event('A.f8d6e0586b0a20c7.FanTopPermission.PermissionRemoved', {
                 target: address(accounts["emulator-user-1"].address),
                 role: uint8(3) // minter
             })

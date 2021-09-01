@@ -30,7 +30,7 @@ test('Admin can add Operator', () => {
     ).toEqual({
         authorizers: '[f8d6e0586b0a20c7]',
         events: events(
-            event('A.f8d6e0586b0a20c7.DCAPermission.PermissionAdded', {
+            event('A.f8d6e0586b0a20c7.FanTopPermission.PermissionAdded', {
                 target: address(accounts["emulator-user-1"].address),
                 role: uint8(2) // operator
             })
@@ -45,7 +45,7 @@ test('Admin can add Operator', () => {
         emulator.scripts('scripts/get_permission.cdc', address(accounts["emulator-user-1"].address))
     ).toEqual(optional(
         dicaa([{
-            key: enumUint8('A.f8d6e0586b0a20c7.DCAPermission.Role', 2),
+            key: enumUint8('A.f8d6e0586b0a20c7.FanTopPermission.Role', 2),
             value: bool(true)
         }])
     ))

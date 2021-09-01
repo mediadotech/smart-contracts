@@ -28,14 +28,14 @@ test('Item limits that have never been mint can be updated', async () => {
     expect(
         emulator.scripts('scripts/get_item.cdc', string('test-item-id-1'))
     ).toEqual(optional(
-        struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
+        struct('A.f8d6e0586b0a20c7.FanTopToken.Item', {
             itemId: string('test-item-id-1'),
             version: uint32(1),
             mintedCount: uint32(0),
             limit: uint32(10),
             active: bool(true),
             versions: dicaa([{
-                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.FanTopToken.ItemData', {
                     version: uint32(1),
                     originSerialNumber: uint32(1),
                     metadata: dicss({})

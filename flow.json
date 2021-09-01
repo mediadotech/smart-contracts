@@ -14,9 +14,9 @@
 				"emulator": "f8d6e0586b0a20c7"
 			}
 		},
-		"DigitalContentAsset": "./contracts/DigitalContentAsset.cdc",
-        "DCAMarket": "./contracts/DCAMarket.cdc",
-        "DCAPermission": "./contracts/DCAPermission.cdc"
+		"FanTopToken": "./contracts/FanTopToken.cdc",
+        "FanTopMarket": "./contracts/FanTopMarket.cdc",
+        "FanTopPermission": "./contracts/FanTopPermission.cdc"
 	},
 	"networks": {
 		"emulator": "127.0.0.1:3569",
@@ -68,15 +68,15 @@
 	"deployments": {
 		"testnet": {
 			"testnet-account": [
-				"DigitalContentAsset",
-				"DCAPermission"
+				"FanTopToken",
+				"FanTopPermission"
 			]
 		},
 		"emulator": {
 			"emulator-account": [
 				"NonFungibleToken",
-				"DigitalContentAsset",
-				"DCAPermission"
+				"FanTopToken",
+				"FanTopPermission"
 			]
 		}
 	}

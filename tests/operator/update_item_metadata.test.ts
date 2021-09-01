@@ -25,14 +25,14 @@ test('Non-minted version of metadata can be updated with the same version', () =
     emulator.transactions('transactions/operator/update_item_metadata.cdc', string('test-item-id-1'), uint32(1), dicss({ 'versionName': 'First (overwritten)'}))
 
     expect(emulator.scripts('scripts/get_item.cdc', string('test-item-id-1'))).toEqual(optional(
-        struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
+        struct('A.f8d6e0586b0a20c7.FanTopToken.Item', {
             itemId: string('test-item-id-1'),
             version: uint32(1),
             mintedCount: uint32(0),
             limit: uint32(1),
             active: bool(true),
             versions: dicaa([{
-                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.FanTopToken.ItemData', {
                     version: uint32(1),
                     originSerialNumber: uint32(1),
                     metadata: dicss({ 'versionName': 'First (overwritten)'})
@@ -60,20 +60,20 @@ test('Minted version of metadata can be overridden with newer version of metadat
     emulator.transactions('transactions/operator/update_item_metadata.cdc', string('test-item-id-3'), uint32(2), dicss({ 'versionName': 'Second'}))
 
     expect(emulator.scripts('scripts/get_item.cdc', string('test-item-id-3'))).toEqual(optional(
-        struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
+        struct('A.f8d6e0586b0a20c7.FanTopToken.Item', {
             itemId: string('test-item-id-3'),
             version: uint32(2),
             mintedCount: uint32(1),
             limit: uint32(1),
             active: bool(true),
             versions: dicaa([{
-                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                key: uint32(1), value: struct('A.f8d6e0586b0a20c7.FanTopToken.ItemData', {
                     version: uint32(1),
                     originSerialNumber: uint32(1),
                     metadata: dicss({ 'versionName': 'First'})
                 })
             }, {
-                key: uint32(2), value: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                key: uint32(2), value: struct('A.f8d6e0586b0a20c7.FanTopToken.ItemData', {
                     version: uint32(2),
                     originSerialNumber: uint32(2),
                     metadata: dicss({ 'versionName': 'Second'})

@@ -1,11 +1,11 @@
-import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
-import DCAPermission from "../../contracts/DCAPermission.cdc"
+import FanTopToken from "../../contracts/FanTopToken.cdc"
+import FanTopPermission from "../../contracts/FanTopPermission.cdc"
 
 transaction(itemId: String, limit: UInt32) {
-    let operatorRef: &DCAPermission.Operator
+    let operatorRef: &FanTopPermission.Operator
 
     prepare(account: AuthAccount) {
-        self.operatorRef = account.borrow<&DCAPermission.Holder>(from: DCAPermission.receiverStoragePath)?.borrowOperator(by: account)
+        self.operatorRef = account.borrow<&FanTopPermission.Holder>(from: FanTopPermission.receiverStoragePath)?.borrowOperator(by: account)
             ?? panic("No operator in storage")
     }
 

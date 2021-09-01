@@ -1,9 +1,9 @@
-import DigitalContentAsset from "../contracts/DigitalContentAsset.cdc"
+import FanTopToken from "../contracts/FanTopToken.cdc"
 
-pub fun main(): [DigitalContentAsset.Item] {
-    let items: [DigitalContentAsset.Item] = []
-    for id in DigitalContentAsset.getItemIds() {
-        items.append(DigitalContentAsset.getItem(id)!)
+pub fun main(): [FanTopToken.Item] {
+    let items: [FanTopToken.Item] = []
+    for id in FanTopToken.getItemIds() {
+        items.append(FanTopToken.getItem(id)!)
     }
     return items
 }
