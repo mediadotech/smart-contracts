@@ -1,15 +1,15 @@
-import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
-import DCAPermission from "../../contracts/DCAPermission.cdc"
+import FanTopToken from "../../contracts/FanTopToken.cdc"
+import FanTopPermission from "../../contracts/FanTopPermission.cdc"
 
 transaction(receiver: Address) {
-    let ownerRef: &DCAPermission.Owner
+    let ownerRef: &FanTopPermission.Owner
 
     prepare(owner: AuthAccount) {
-        self.ownerRef = owner.borrow<&DCAPermission.Owner>(from: /storage/DCAOwner)
+        self.ownerRef = owner.borrow<&FanTopPermission.Owner>(from: /storage/FanTopOwner)
             ?? panic("No owner resource in storage")
     }
 
     execute {
-        self.ownerRef.removePermission(address: receiver, as: DCAPermission.Role.minter)
+        self.ownerRef.removePermission(address: receiver, as: FanTopPermission.Role.minter)
     }
 }

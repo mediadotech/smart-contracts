@@ -1,6 +1,6 @@
 import NonFungibleToken from "./NonFungibleToken.cdc"
 
-pub contract DigitalContentAsset: NonFungibleToken {
+pub contract FanTopToken: NonFungibleToken {
     pub var totalSupply: UInt64
 
     pub event ContractInitialized()
@@ -121,13 +121,13 @@ pub contract DigitalContentAsset: NonFungibleToken {
         access(self) let data: NFTData
 
         init(refId: String, data: NFTData) {
-            DigitalContentAsset.totalSupply = DigitalContentAsset.totalSupply + (1 as UInt64)
+            FanTopToken.totalSupply = FanTopToken.totalSupply + (1 as UInt64)
 
-            self.id = DigitalContentAsset.totalSupply
+            self.id = FanTopToken.totalSupply
             self.refId = refId
             self.data = data
 
-            emit DigitalContentAsset.TokenCreated(
+            emit FanTopToken.TokenCreated(
                 id: self.id,
                 refId: refId,
                 serialNumber: data.serialNumber,
@@ -137,7 +137,7 @@ pub contract DigitalContentAsset: NonFungibleToken {
         }
 
         destroy() {
-            emit DigitalContentAsset.TokenDestroyed(
+            emit FanTopToken.TokenDestroyed(
                 id: self.id,
                 refId: self.refId,
                 serialNumber: self.data.serialNumber,
@@ -175,7 +175,7 @@ pub contract DigitalContentAsset: NonFungibleToken {
     }
 
     pub fun createEmptyCollection(): @NonFungibleToken.Collection {
-        return <-create DigitalContentAsset.Collection()
+        return <-create FanTopToken.Collection()
     }
 
     pub resource interface CollectionPublic {
@@ -183,7 +183,7 @@ pub contract DigitalContentAsset: NonFungibleToken {
         pub fun batchDeposit(tokens: @NonFungibleToken.Collection)
         pub fun getIDs(): [UInt64]
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowDCAToken(id: UInt64): &DigitalContentAsset.NFT? {
+        pub fun borrowFanTopToken(id: UInt64): &FanTopToken.NFT? {
             post {
                 (result == nil) || (result?.id == id): "Invalid id"
             }
@@ -221,7 +221,7 @@ pub contract DigitalContentAsset: NonFungibleToken {
             pre {
                 !self.ownedNFTs.containsKey(token.id): "That id already exists"
             }
-            let token <- token as! @DigitalContentAsset.NFT
+            let token <- token as! @FanTopToken.NFT
             let id = token.id
             let refId = token.refId
             self.ownedNFTs[id] <-! token
@@ -245,9 +245,9 @@ pub contract DigitalContentAsset: NonFungibleToken {
             return &self.ownedNFTs[id] as &NonFungibleToken.NFT
         }
 
-        pub fun borrowDCAToken(id: UInt64): &DigitalContentAsset.NFT? {
+        pub fun borrowFanTopToken(id: UInt64): &FanTopToken.NFT? {
             let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
-            return ref as? &DigitalContentAsset.NFT
+            return ref as? &FanTopToken.NFT
         }
 
         destroy() {
@@ -257,38 +257,38 @@ pub contract DigitalContentAsset: NonFungibleToken {
 
     access(account) fun createItem(itemId: String, version: UInt32, limit: UInt32, metadata: { String: String }, active: Bool): Item {
         pre {
-            !DigitalContentAsset.items.containsKey(itemId): "Admin cannot create existing items"
+            !FanTopToken.items.containsKey(itemId): "Admin cannot create existing items"
         }
         post {
-            DigitalContentAsset.items.containsKey(itemId): "items contains the created item"
+            FanTopToken.items.containsKey(itemId): "items contains the created item"
         }
 
         let item = Item(itemId: itemId, version: version, metadata: metadata, limit: limit, active: active)
-        DigitalContentAsset.items.insert(key: itemId, item)
+        FanTopToken.items.insert(key: itemId, item)
 
         return item
     }
 
     access(account) fun updateMetadata(itemId: String, version: UInt32, metadata: { String: String }) {
         pre {
-            DigitalContentAsset.items.containsKey(itemId): "Metadata of non-existent item cannot be updated"
+            FanTopToken.items.containsKey(itemId): "Metadata of non-existent item cannot be updated"
         }
-        DigitalContentAsset.items[itemId]!.setMetadata(version: version, metadata: metadata)
+        FanTopToken.items[itemId]!.setMetadata(version: version, metadata: metadata)
     }
 
     access(account) fun updateLimit(itemId: String, limit: UInt32) {
         pre {
-            DigitalContentAsset.items.containsKey(itemId): "Limit of non-existent item cannot be updated"
+            FanTopToken.items.containsKey(itemId): "Limit of non-existent item cannot be updated"
         }
-        DigitalContentAsset.items[itemId]!.setLimit(limit: limit)
+        FanTopToken.items[itemId]!.setLimit(limit: limit)
     }
 
     access(account) fun updateActive(itemId: String, active: Bool) {
         pre {
-            DigitalContentAsset.items.containsKey(itemId): "Limit of non-existent item cannot be updated"
-            DigitalContentAsset.items[itemId]!.active != active: "Item cannot be updated with the same value"
+            FanTopToken.items.containsKey(itemId): "Limit of non-existent item cannot be updated"
+            FanTopToken.items[itemId]!.active != active: "Item cannot be updated with the same value"
         }
-        DigitalContentAsset.items[itemId]!.setActive(active: active)
+        FanTopToken.items[itemId]!.setActive(active: active)
     }
 
     access(account) fun mintToken(
@@ -298,18 +298,18 @@ pub contract DigitalContentAsset: NonFungibleToken {
         metadata: { String: String }
     ): @NFT {
         pre {
-            DigitalContentAsset.items.containsKey(itemId) != nil: "That itemId does not exist"
-            itemVersion == DigitalContentAsset.items[itemId]!.version : "That itemVersion did not match the latest version"
-            !DigitalContentAsset.items[itemId]!.isFulfilled(): "Fulfilled items cannot be mint"
-            DigitalContentAsset.items[itemId]!.active: "Only active items can be mint"
+            FanTopToken.items.containsKey(itemId) != nil: "That itemId does not exist"
+            itemVersion == FanTopToken.items[itemId]!.version : "That itemVersion did not match the latest version"
+            !FanTopToken.items[itemId]!.isFulfilled(): "Fulfilled items cannot be mint"
+            FanTopToken.items[itemId]!.active: "Only active items can be mint"
         }
         post {
-            DigitalContentAsset.totalSupply == before(DigitalContentAsset.totalSupply) + 1: "totalSupply must be incremented"
-            DigitalContentAsset.items[itemId]!.mintedCount == before(DigitalContentAsset.items[itemId])!.mintedCount + 1: "mintedCount must be incremented"
-            DigitalContentAsset.items[itemId]!.isVersionLocked(): "item must be locked once mint"
+            FanTopToken.totalSupply == before(FanTopToken.totalSupply) + 1: "totalSupply must be incremented"
+            FanTopToken.items[itemId]!.mintedCount == before(FanTopToken.items[itemId])!.mintedCount + 1: "mintedCount must be incremented"
+            FanTopToken.items[itemId]!.isVersionLocked(): "item must be locked once mint"
         }
 
-        let serialNumber = DigitalContentAsset.items[itemId]!.countUp()
+        let serialNumber = FanTopToken.items[itemId]!.countUp()
 
         let data = NFTData(
             serialNumber: serialNumber,
@@ -334,8 +334,8 @@ pub contract DigitalContentAsset: NonFungibleToken {
     }
 
     init() {
-        self.collectionStoragePath = /storage/DCACollection
-        self.collectionPublicPath = /public/DCACollection
+        self.collectionStoragePath = /storage/FanTopTokenCollection
+        self.collectionPublicPath = /public/FanTopTokenCollection
 
         self.totalSupply = 0
         self.items = {}

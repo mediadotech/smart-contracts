@@ -1,5 +1,5 @@
-import DigitalContentAsset from "../contracts/DigitalContentAsset.cdc"
+import FanTopToken from "../contracts/FanTopToken.cdc"
 
-pub fun main(itemId: String): DigitalContentAsset.Item? {
-    return DigitalContentAsset.getItem(itemId)
+pub fun main(itemId: String): FanTopToken.Item? {
+    return FanTopToken.getItem(itemId)
 }

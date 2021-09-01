@@ -34,14 +34,14 @@ test('Minter can mint NFT', async () => {
     expect(result).toEqual({
         authorizers: expect.any(String),
         events: events(
-            event(expect.stringContaining('.DigitalContentAsset.TokenCreated'), {
+            event(expect.stringContaining('.FanTopToken.TokenCreated'), {
                 id: uint64(expect.any(String)),
                 refId: string('test-ref-id-1'),
                 serialNumber: uint32(1),
                 itemId: string('test-item-for-mint-token'),
                 itemVersion: uint32(1)
             }),
-            event(expect.stringContaining('DigitalContentAsset.Deposit'),{
+            event(expect.stringContaining('FanTopToken.Deposit'),{
                 id: uint64(expect.any(String)),
                 to: optional(address(expect.any(String)))
             })
@@ -54,11 +54,11 @@ test('Minter can mint NFT', async () => {
 
     expect(
         emulator.scripts('scripts/get_tokens.cdc', address(USER1_ADDRESS)
-    )).toEqual(array([optional(resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+    )).toEqual(array([optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
         uuid: uint64(expect.any(String)),
         id: uint64(1),
         refId: string('test-ref-id-1'),
-        data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+        data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
             serialNumber: uint32(1),
             itemId: string('test-item-for-mint-token'),
             itemVersion: uint32(1),

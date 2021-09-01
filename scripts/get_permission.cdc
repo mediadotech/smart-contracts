@@ -1,5 +1,5 @@
-import DCAPermission from "../contracts/DCAPermission.cdc"
+import FanTopPermission from "../contracts/FanTopPermission.cdc"
 
-pub fun main(address: Address): { DCAPermission.Role: Bool }? {
-    return DCAPermission.getAllPermissions()[address]
+pub fun main(address: Address): { FanTopPermission.Role: Bool }? {
+    return FanTopPermission.getAllPermissions()[address]
 }

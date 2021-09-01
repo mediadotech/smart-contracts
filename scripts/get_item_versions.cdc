@@ -1,5 +1,5 @@
-import DigitalContentAsset from "../contracts/DigitalContentAsset.cdc"
+import FanTopToken from "../contracts/FanTopToken.cdc"
 
 pub fun main(itemId: String): [UInt32] {
-    return DigitalContentAsset.getItem(itemId)!.versions.keys
+    return FanTopToken.getItem(itemId)!.getVersions().keys
 }

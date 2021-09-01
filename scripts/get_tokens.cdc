@@ -1,12 +1,12 @@
-import DigitalContentAsset from "../contracts/DigitalContentAsset.cdc"
+import FanTopToken from "../contracts/FanTopToken.cdc"
 
-pub fun main(account: Address): [&DigitalContentAsset.NFT] {
-    let collectionRef = getAccount(account).getCapability(DigitalContentAsset.collectionPublicPath).borrow<&{DigitalContentAsset.CollectionPublic}>()
-        ?? panic("Could not get public DCA collection reference")
+pub fun main(account: Address): [&FanTopToken.NFT] {
+    let collectionRef = getAccount(account).getCapability(FanTopToken.collectionPublicPath).borrow<&{FanTopToken.CollectionPublic}>()
+        ?? panic("Could not get public FanTopToken collection reference")
 
-    let refs: [&DigitalContentAsset.NFT] = []
+    let refs: [&FanTopToken.NFT] = []
     for id in collectionRef.getIDs() {
-        refs.append(collectionRef.borrowDCAToken(id: id)!)
+        refs.append(collectionRef.borrowFanTopToken(id: id)!)
     }
     return refs
 }

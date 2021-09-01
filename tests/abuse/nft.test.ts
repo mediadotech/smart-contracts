@@ -52,11 +52,11 @@ test('Users cannot rewrite NFTs of others', () => {
 
     expect(
         emulator.scripts('scripts/get_token.cdc', address(ownerAddress), uint64(nftID))
-    ).toEqual(optional(optional(resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+    ).toEqual(optional(optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
         uuid: uint64(expect.any(String)),
         id: uint64(1),
         refId: string('test-ref-id-1'),
-        data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+        data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
             serialNumber: uint32(1),
             itemId: string('test-item-id-1'),
             itemVersion: uint32(1),

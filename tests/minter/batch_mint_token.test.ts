@@ -43,47 +43,47 @@ test('Minter can mint multiple NFTs at once', async () => {
     expect(result).toEqual({
         authorizers: '[f8d6e0586b0a20c7]',
         events: events(
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.TokenCreated', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
                 id: uint64(1),
                 refId: string('test-ref-1'),
                 serialNumber: uint32(1),
                 itemId: string('test-item-1'),
                 itemVersion: uint32(1)
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.Deposit', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
                 id: uint64(1),
                 to: optional(address(USER1_ADDRESS))
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.TokenCreated', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
                 id: uint64(2),
                 refId: string('test-ref-2'),
                 serialNumber: uint32(2),
                 itemId: string('test-item-1'),
                 itemVersion: uint32(1)
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.Deposit', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
                 id: uint64(2),
                 to: optional(address(USER1_ADDRESS))
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.TokenCreated', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
                 id: uint64(3),
                 refId: string('test-ref-3'),
                 serialNumber: uint32(1),
                 itemId: string('test-item-2'),
                 itemVersion: uint32(1)
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.Deposit', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
                 id: uint64(3),
                 to: optional(address(USER1_ADDRESS))
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.TokenCreated', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
                 id: uint64(4),
                 refId: string('test-ref-4'),
                 serialNumber: uint32(2),
                 itemId: string('test-item-2'),
                 itemVersion: uint32(1)
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.Deposit', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
                 id: uint64(4),
                 to: optional(address(USER1_ADDRESS))
             })
@@ -98,11 +98,11 @@ test('Minter can mint multiple NFTs at once', async () => {
         emulator.scripts('scripts/get_tokens.cdc', address(USER1_ADDRESS))
     ).toEqual(
         array([
-            optional(resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+            optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
                 id: uint64(1),
                 refId: string('test-ref-1'),
-                data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+                data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(1),
                     itemId: string('test-item-1'),
                     itemVersion: uint32(1),
@@ -111,11 +111,11 @@ test('Minter can mint multiple NFTs at once', async () => {
                     })
                 })
             })),
-            optional(resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+            optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
                 id: uint64(2),
                 refId: string('test-ref-2'),
-                data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+                data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(2),
                     itemId: string('test-item-1'),
                     itemVersion: uint32(1),
@@ -124,22 +124,22 @@ test('Minter can mint multiple NFTs at once', async () => {
                     })
                 })
             })),
-            optional(resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+            optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
                 id: uint64(3),
                 refId: string('test-ref-3'),
-                data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+                data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(1),
                     itemId: string('test-item-2'),
                     itemVersion: uint32(1),
                     metadata: dicss({})
                 })
             })),
-            optional(resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+            optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
                 id: uint64(4),
                 refId: string('test-ref-4'),
-                data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+                data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(2),
                     itemId: string('test-item-2'),
                     itemVersion: uint32(1),

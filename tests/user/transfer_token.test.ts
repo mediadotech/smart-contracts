@@ -43,11 +43,11 @@ test('A user can transfer an NFT to another user', async () => {
     )).toEqual({
         authorizers: expect.any(String),
         events: events(
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.Withdraw', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.Withdraw', {
                 id: uint64(1),
                 from: optional(address(USER1_ADDRESS))
             }),
-            event('A.f8d6e0586b0a20c7.DigitalContentAsset.Deposit', {
+            event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
                 id: uint64(1),
                 to: optional(address(USER2_ADDRESS))
             })
@@ -68,11 +68,11 @@ test('A user can transfer an NFT to another user', async () => {
     ).toEqual(
         array([
             optional(
-                resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+                resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
                 id: uint64(1),
                 refId: string('test-ref-id-1'),
-                data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+                data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(1),
                     itemId: string('test-item-id-1'),
                     itemVersion: uint32(1),
@@ -106,11 +106,11 @@ test('Users cannot transfer NFTs to non-existent users', async () => {
     )
     expect(result2).toEqual(array([
         optional(
-            resource('A.f8d6e0586b0a20c7.DigitalContentAsset.NFT', {
+            resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
                 id: uint64(2),
                 refId: string('test-ref-id-2'),
-                data: struct('A.f8d6e0586b0a20c7.DigitalContentAsset.NFTData', {
+                data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(2),
                     itemId: string('test-item-id-1'),
                     itemVersion: uint32(1),

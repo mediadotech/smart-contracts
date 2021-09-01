@@ -1,7 +1,7 @@
 {
   "name": "smart-contracts",
   "version": "1.0.0",
-  "description": "Flow contract for Digital Content Assets",
+  "description": "Flow contract for FanTop",
   "main": "index.js",
   "directories": {
     "test": "tests"

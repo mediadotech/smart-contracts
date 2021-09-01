@@ -1,5 +1,5 @@
-import DigitalContentAsset from "../contracts/DigitalContentAsset.cdc"
+import FanTopToken from "../contracts/FanTopToken.cdc"
 
 pub fun main(address: Address): Bool {
-    return getAccount(address).getCapability<&{DigitalContentAsset.CollectionPublic}>(/public/DCACollection).check()
+    return getAccount(address).getCapability<&{FanTopToken.CollectionPublic}>(/public/FanTopTokenCollection).check()
 }

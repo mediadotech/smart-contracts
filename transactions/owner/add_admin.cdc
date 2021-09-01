@@ -1,14 +1,14 @@
-import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
-import DCAPermission from "../../contracts/DCAPermission.cdc"
+import FanTopToken from "../../contracts/FanTopToken.cdc"
+import FanTopPermission from "../../contracts/FanTopPermission.cdc"
 
 transaction(receiver: Address) {
-    let ownerRef: &DCAPermission.Owner
-    let receiverRef: &AnyResource{DCAPermission.Receiver}
+    let ownerRef: &FanTopPermission.Owner
+    let receiverRef: &AnyResource{FanTopPermission.Receiver}
 
     prepare(owner: AuthAccount) {
-        self.ownerRef = owner.borrow<&DCAPermission.Owner>(from: /storage/DCAOwner)
+        self.ownerRef = owner.borrow<&FanTopPermission.Owner>(from: /storage/FanTopOwner)
             ?? panic("No owner resource in storage")
-        self.receiverRef = getAccount(receiver).getCapability(DCAPermission.receiverPublicPath).borrow<&AnyResource{DCAPermission.Receiver}>()
+        self.receiverRef = getAccount(receiver).getCapability(FanTopPermission.receiverPublicPath).borrow<&AnyResource{FanTopPermission.Receiver}>()
             ?? panic("No permission receiver in storage")
     }
 

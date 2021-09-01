@@ -1,10 +1,10 @@
-import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
+import FanTopToken from "../../contracts/FanTopToken.cdc"
 
 transaction(itemId: String, version: UInt32, metadata: { String: String }, originSerialNumber: UInt32) {
     prepare(account: AuthAccount) {}
 
     execute {
-        let data = DigitalContentAsset.ItemData(version: version, metadata: metadata, originSerialNumber: 100)
-        DigitalContentAsset.getItem(itemId)?.getVersions()?.insert(key: version, data)
+        let data = FanTopToken.ItemData(version: version, metadata: metadata, originSerialNumber: 100)
+        FanTopToken.getItem(itemId)?.getVersions()?.insert(key: version, data)
     }
 }

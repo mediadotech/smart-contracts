@@ -1,16 +1,16 @@
-import DigitalContentAsset from "../../contracts/DigitalContentAsset.cdc"
-import DCAPermission from "../../contracts/DCAPermission.cdc"
+import FanTopToken from "../../contracts/FanTopToken.cdc"
+import FanTopPermission from "../../contracts/FanTopPermission.cdc"
 
 // arg: [["ref-id-1", "item-id-1", { "exInfo": "info per token" }], ... ]
 transaction(recipient: Address, args: [[AnyStruct]]) {
-    let minterRef: &DCAPermission.Minter
-    let collectionRef: &{DigitalContentAsset.CollectionPublic}
+    let minterRef: &FanTopPermission.Minter
+    let collectionRef: &{FanTopToken.CollectionPublic}
 
     prepare(account: AuthAccount) {
-        self.minterRef = account.borrow<&DCAPermission.Holder>(from: DCAPermission.receiverStoragePath)?.borrowMinter(by: account)
+        self.minterRef = account.borrow<&FanTopPermission.Holder>(from: FanTopPermission.receiverStoragePath)?.borrowMinter(by: account)
             ?? panic("No minter in storage")
-        self.collectionRef = getAccount(recipient).getCapability<&{DigitalContentAsset.CollectionPublic}>(DigitalContentAsset.collectionPublicPath).borrow()
-            ?? panic("Cannot borrow a reference to the DCA collection")
+        self.collectionRef = getAccount(recipient).getCapability<&{FanTopToken.CollectionPublic}>(FanTopToken.collectionPublicPath).borrow()
+            ?? panic("Cannot borrow a reference to the FanTopToken collection")
     }
 
     execute {
@@ -22,7 +22,7 @@ transaction(recipient: Address, args: [[AnyStruct]]) {
 
             assert(!refIds.contains(refId), message: "NFT with duplicate refId is not issued")
 
-            let item = DigitalContentAsset.getItem(itemId) ?? panic("That itemId does not exist")
+            let item = FanTopToken.getItem(itemId) ?? panic("That itemId does not exist")
             let itemVersion = item.version
 
             let token <- self.minterRef.mintToken(

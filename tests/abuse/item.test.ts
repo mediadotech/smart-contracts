@@ -33,14 +33,14 @@ test('Item cannot be rewritten directly', async () => {
     expect(
         emulator.scripts('scripts/get_items.cdc')
     ).toEqual(array([
-        struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
+        struct('A.f8d6e0586b0a20c7.FanTopToken.Item', {
             itemId: string('test-item-id-1'),
             version: uint32(5),
             mintedCount: uint32(0),
             limit: uint32(10),
             active: bool(true),
             versions: dicaa([{key: uint32(5), value:
-                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                struct('A.f8d6e0586b0a20c7.FanTopToken.ItemData', {
                     version: uint32(5),
                     originSerialNumber: uint32(1),
                     metadata: dicss({ itemName: 'Test Item 1@v5' })
@@ -65,14 +65,14 @@ test('Item.mintedCount cannot be rewritten directly', async () => {
     expect(
         emulator.scripts('scripts/get_item.cdc', string('test-item-id-2'))
     ).toEqual(optional(
-        struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
+        struct('A.f8d6e0586b0a20c7.FanTopToken.Item', {
             itemId: string('test-item-id-2'),
             version: uint32(5),
             mintedCount: uint32(0),
             limit: uint32(10),
             active: bool(true),
             versions: dicaa([{key: uint32(5), value:
-                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                struct('A.f8d6e0586b0a20c7.FanTopToken.ItemData', {
                     version: uint32(5),
                     originSerialNumber: uint32(1),
                     metadata: dicss({ })
@@ -96,14 +96,14 @@ test('Item metadata cannot be rewritten directly', async () => {
     expect(
         emulator.scripts('scripts/get_item.cdc', string('test-item-id-3'))
     ).toEqual(optional(
-        struct('A.f8d6e0586b0a20c7.DigitalContentAsset.Item', {
+        struct('A.f8d6e0586b0a20c7.FanTopToken.Item', {
             itemId: string('test-item-id-3'),
             version: uint32(1),
             mintedCount: uint32(0),
             limit: uint32(0),
             active: bool(true),
             versions: dicaa([{key: uint32(1), value:
-                struct('A.f8d6e0586b0a20c7.DigitalContentAsset.ItemData', {
+                struct('A.f8d6e0586b0a20c7.FanTopToken.ItemData', {
                     version: uint32(1),
                     originSerialNumber: uint32(1),
                     metadata: dicss({ })
