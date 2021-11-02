@@ -1,15 +1,13 @@
-import FanTopToken from "../../contracts/FanTopToken.cdc"
-import FanTopPermission from "../../contracts/FanTopPermission.cdc"
+import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
 
-transaction(receiver: Address) {
-    let ownerRef: &FanTopPermission.Owner
+transaction(address: Address) {
+    let owner: FanTopPermissionV2.Owner
 
-    prepare(owner: AuthAccount) {
-        self.ownerRef = owner.borrow<&FanTopPermission.Owner>(from: /storage/FanTopOwner)
-            ?? panic("No owner resource in storage")
+    prepare(account: AuthAccount) {
+        self.owner = FanTopPermissionV2.Owner(account)
     }
 
     execute {
-        self.ownerRef.removePermission(address: receiver, as: FanTopPermission.Role.admin)
+        self.owner.removePermission(address, role: FanTopPermissionV2.Role.admin)
     }
 }

@@ -1,16 +1,15 @@
 import FanTopToken from "../../contracts/FanTopToken.cdc"
-import FanTopPermission from "../../contracts/FanTopPermission.cdc"
+import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
 
 transaction(itemId: String, version: UInt32, limit: UInt32, metadata: { String: String }, active: Bool) {
-    let operatorRef: &FanTopPermission.Operator
+    let operator: FanTopPermissionV2.Operator
 
     prepare(account: AuthAccount) {
-        self.operatorRef = account.borrow<&FanTopPermission.Holder>(from: FanTopPermission.receiverStoragePath)?.borrowOperator(by: account)
-            ?? panic("No operator in storage")
+        self.operator = FanTopPermissionV2.Operator(account)
     }
 
     execute {
-        self.operatorRef.createItem(itemId: itemId, version: version, limit: limit, metadata: metadata, active: active)
+        self.operator.createItem(itemId: itemId, version: version, limit: limit, metadata: metadata, active: active)
     }
 
     post {

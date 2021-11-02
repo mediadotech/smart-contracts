@@ -1,4 +1,4 @@
-import { createEmulator, FlowEmulator } from "../utils/emulator"
+import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 
 let emulator: FlowEmulator
 beforeAll(async () => {

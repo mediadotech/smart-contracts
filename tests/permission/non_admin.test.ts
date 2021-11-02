@@ -1,6 +1,6 @@
-import { createEmulator, FlowEmulator } from "../utils/emulator"
+import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import flowConfig from '../../flow.json'
-import { address } from "../utils/args"
+import { address } from "../__fixtures__/args"
 
 let emulator: FlowEmulator
 beforeAll(async () => {
@@ -11,22 +11,12 @@ afterAll(() => {
     emulator?.terminate()
 })
 
-beforeEach(() => {
-    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
-    emulator.signer('emulator-user-2').transactions('transactions/permission/init_permission_receiver.cdc')
-})
-
-afterEach(() => {
-    try { emulator.signer('emulator-user-1').transactions('transactions/permission/destroy_permission_receiver.cdc') } catch {}
-    try { emulator.signer('emulator-user-2').transactions('transactions/permission/destroy_permission_receiver.cdc') } catch {}
-})
-
 // ロールを与えられていないユーザーはAdminとして活動できない
 test('Users who are not given the role cannot act as Admin', () => {
     // As an Admin
     expect(() =>
         emulator.signer('emulator-user-1').transactions('transactions/admin/add_minter.cdc', address(flowConfig.accounts["emulator-user-2"].address))
-    ).toThrowError('error: pre-condition failed: Roles not given cannot be borrowed')
+    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.admin)')
 })
 
 // ロールを削除されたユーザーはAdminとして活動できない
@@ -37,5 +27,5 @@ test('User whose role has been deleted cannot act as Admin', () => {
     // As an Admin
     expect(() =>
         emulator.signer('emulator-user-1').transactions('transactions/admin/add_minter.cdc', address(flowConfig.accounts["emulator-user-2"].address))
-    ).toThrowError('error: pre-condition failed: Roles without permission cannot be used')
+    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.admin)')
 })

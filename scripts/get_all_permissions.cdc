@@ -1,5 +1,5 @@
-import FanTopPermission from "../contracts/FanTopPermission.cdc"
+import FanTopPermissionV2 from "../contracts/FanTopPermissionV2.cdc"
 
-pub fun main(): { Address: { FanTopPermission.Role: Bool } } {
-    return FanTopPermission.getAllPermissions()
+pub fun main(): { Address: { FanTopPermissionV2.Role: Bool } } {
+    return FanTopPermissionV2.getAllPermissions()
 }

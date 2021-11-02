@@ -19,12 +19,20 @@ export function enumUint8(id: string, value: number) {
     }
 }
 
+export function int(value: number) {
+    return { type: 'Int', value: value.toString() }
+}
+
 export function uint32(value: number) {
     return { type: 'UInt32', value: value.toString() }
 }
 
 export function uint64<V = number>(value: V) {
     return { type: 'UInt64', value: typeof value == 'number' ? value.toString() : value }
+}
+
+export function ufix64<V = number>(value: V) {
+    return { type: 'UFix64', value: typeof value == 'number' ? value.toFixed(2) : value }
 }
 
 export function string<V = string>(value: V) {

@@ -14,9 +14,28 @@
 				"emulator": "f8d6e0586b0a20c7"
 			}
 		},
+        "FungibleToken": {
+            "source": "./contracts/FungibleToken.cdc",
+            "aliases": {
+				"mainnet": "f233dcee88fe0abe",
+				"testnet": "9a0766d93b6608b7",
+				"emulator": "ee82856bf20e2aa6"
+            }
+        },
+        "FlowToken": {
+            "source": "./contracts/FlowToken.cdc",
+            "aliases": {
+                "mainnet": "1654653399040a61",
+				"testnet": "7e60df042a9c0868",
+				"emulator": "0ae53cb6e3f42a79"
+            }
+        },
 		"FanTopToken": "./contracts/FanTopToken.cdc",
         "FanTopMarket": "./contracts/FanTopMarket.cdc",
-        "FanTopPermission": "./contracts/FanTopPermission.cdc"
+        "FanTopPermission": "./contracts/FanTopPermission.cdc",
+        "FanTopPermissionV2": "./contracts/FanTopPermissionV2.cdc",
+        "Signature": "./contracts/Signature.cdc",
+        "Test": "./contracts/Test.cdc"
 	},
 	"networks": {
 		"emulator": "127.0.0.1:3569",
@@ -63,7 +82,12 @@
                 "privateKey": "ee9e4e7648f5e53c1bb25b2e332c49cd6fc181f5e2baec796bff6d4167526c5a",
                 "pubkey": "ce27f48abc57d60c5a76654e49db5d8adbb1fe772b25442ed5213a77a715dbad3e6743096ac45c7025e203f2c1abdfda691b528d44391141df4875edd00fe91f"
             }
-		}
+		},
+		"agent": {
+            "address": "0xf3fcd2c1a78f5eee",
+            "key": "d490306e5d989e285d3c04699fdb32504a6910fd70a178ac0a38bcfb8c86790f",
+            "pubkey": "63a0fdea728a37331bfd8456808c7d77ceb03e7ca5a0224a3038a9bb8fe013ec435be4a1e6451dd684d7fcfe17604e7bb1c2a0cbdeec840ac32155c5299db76f"
+        }
 	},
 	"deployments": {
 		"testnet": {
@@ -76,7 +100,11 @@
 			"emulator-account": [
 				"NonFungibleToken",
 				"FanTopToken",
-				"FanTopPermission"
+				"FanTopPermission",
+                "FanTopPermissionV2",
+				"FanTopMarket",
+                "Signature",
+                "Test"
 			]
 		}
 	}
