@@ -1,5 +1,5 @@
-import { address, array, bool, dicaa, dicss, json, optional, string, struct, uint32 } from "../utils/args"
-import { createEmulator, FlowEmulator } from "../utils/emulator"
+import { address, array, bool, dicaa, dicss, json, optional, string, struct, uint32 } from "../__fixtures__/args"
+import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import flowConfig from '../../flow.json'
 
 const OPERATOR_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
@@ -8,8 +8,6 @@ let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
-    emulator.transactions('transactions/permission/init_permission_receiver.cdc')
-    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(OPERATOR_ADDRESS))
@@ -99,5 +97,5 @@ test('Non-Operator users cannot update Item metadata', () => {
 
     expect(() =>
         emulator.signer('emulator-user-1').transactions('transactions/operator/update_item_metadata.cdc', string(itemId), uint32(1), dicss({ 'exInfo': 'metadata from other user' }))
-    ).toThrow('error: pre-condition failed: Roles not given cannot be borrowed')
+    ).toThrow('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
 })

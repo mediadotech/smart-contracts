@@ -1,5 +1,5 @@
-import { address, bool, dicaa, dicss, json, optional, string, struct, uint32 } from "../utils/args"
-import { createEmulator, FlowEmulator } from "../utils/emulator"
+import { address, bool, dicaa, dicss, json, optional, string, struct, uint32 } from "../__fixtures__/args"
+import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import { accounts } from '../../flow.json'
 
 const OPERATOR_ADDRESS = accounts["emulator-account"].address
@@ -7,8 +7,6 @@ const OPERATOR_ADDRESS = accounts["emulator-account"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
-    emulator.transactions('transactions/permission/init_permission_receiver.cdc')
-    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
 })
@@ -58,7 +56,7 @@ test('Operator can create Items', async () => {
             dicss({itemName: 'Test Item 1'}),
             bool(false)
         )
-    ).toThrowError('error: pre-condition failed: Roles not given cannot be borrowed')
+    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
 })
 
 // 重複して同じitemIdのItemをつくることはできない

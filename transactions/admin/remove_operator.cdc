@@ -1,15 +1,13 @@
-import FanTopToken from "../../contracts/FanTopToken.cdc"
-import FanTopPermission from "../../contracts/FanTopPermission.cdc"
+import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
 
-transaction(receiver: Address) {
-    let adminRef: &FanTopPermission.Admin
+transaction(address: Address) {
+    let admin: FanTopPermissionV2.Admin
 
     prepare(account: AuthAccount) {
-        self.adminRef = account.borrow<&FanTopPermission.Holder>(from: FanTopPermission.receiverStoragePath)?.borrowAdmin(by: account)
-            ?? panic("No admin in storage")
+        self.admin = FanTopPermissionV2.Admin(account)
     }
 
     execute {
-        self.adminRef.removeOperator(receiver)
+        self.admin.removeOperator(address)
     }
 }

@@ -1,5 +1,5 @@
-import { address, bool, dicaa, dicss, optional, string, struct, uint32 } from "../utils/args"
-import { createEmulator, FlowEmulator } from "../utils/emulator"
+import { address, bool, dicaa, dicss, optional, string, struct, uint32 } from "../__fixtures__/args"
+import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import { accounts } from '../../flow.json'
 
 const OPERATOR_ADDRESS = accounts["emulator-account"].address
@@ -8,8 +8,6 @@ let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
-    emulator.transactions('transactions/permission/init_permission_receiver.cdc')
-    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(OPERATOR_ADDRESS))
@@ -75,5 +73,5 @@ test('Non-Operator users cannot update Item limits', () => {
                 string(itemId),
                 uint32(10)
             )
-    ).toThrowError('error: pre-condition failed: Roles not given cannot be borrowed')
+    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
 })

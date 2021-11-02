@@ -1,14 +1,13 @@
 import FanTopToken from "../../contracts/FanTopToken.cdc"
-import FanTopPermission from "../../contracts/FanTopPermission.cdc"
+import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
 
 // arg: [["ref-id-1", "item-id-1", { "exInfo": "info per token" }], ... ]
 transaction(recipient: Address, args: [[AnyStruct]]) {
-    let minterRef: &FanTopPermission.Minter
+    let minter: FanTopPermissionV2.Minter
     let collectionRef: &{FanTopToken.CollectionPublic}
 
     prepare(account: AuthAccount) {
-        self.minterRef = account.borrow<&FanTopPermission.Holder>(from: FanTopPermission.receiverStoragePath)?.borrowMinter(by: account)
-            ?? panic("No minter in storage")
+        self.minter = FanTopPermissionV2.Minter(account)
         self.collectionRef = getAccount(recipient).getCapability<&{FanTopToken.CollectionPublic}>(FanTopToken.collectionPublicPath).borrow()
             ?? panic("Cannot borrow a reference to the FanTopToken collection")
     }
@@ -25,7 +24,7 @@ transaction(recipient: Address, args: [[AnyStruct]]) {
             let item = FanTopToken.getItem(itemId) ?? panic("That itemId does not exist")
             let itemVersion = item.version
 
-            let token <- self.minterRef.mintToken(
+            let token <- self.minter.mintToken(
                 refId: refId,
                 itemId: itemId,
                 itemVersion: itemVersion,

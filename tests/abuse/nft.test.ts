@@ -1,5 +1,5 @@
-import { address, array, dicaa, dicss, json, optional, resource, string, struct, uint32, uint64 } from "../utils/args"
-import { createEmulator, FlowEmulator } from "../utils/emulator"
+import { address, array, dicaa, dicss, json, optional, resource, string, struct, uint32, uint64 } from "../__fixtures__/args"
+import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import flowConfig from '../../flow.json'
 
 const MINTER_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
@@ -7,7 +7,6 @@ const MINTER_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
-    emulator.transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(MINTER_ADDRESS))

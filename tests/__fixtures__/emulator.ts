@@ -4,10 +4,14 @@ import { accounts } from '../../flow.json'
 import { address, dicss, json, string, uint32, bool } from './args'
 import waitPort from 'wait-port'
 
-
 type AccountName = keyof typeof accounts
 
 const HTTP_PORT_OFFSET = 4511 // 3570 + 4511 = 8081
+const EXEC_TIMEOUT = 10000
+
+const FLOW_SERVICEPUBLICKEY='1ac5e6687a710717b1240ae8b68aad36a17dcd23ee01702f3115195efa16a21f11e639a73a0bc4497dd74560c029390d08d8b201b3086fe598bb6b6458783c07'
+const FLOW_SERVICEKEYSIGALGO='ECDSA_P256'
+const FLOW_SERVICEKEYHASHALGO='SHA3_256'
 
 export interface FlowEmulator {
     terminate(): void
@@ -37,16 +41,29 @@ export interface FlowEmulator {
     signer(signer: AccountName): FlowEmulator
 }
 
-export async function createEmulator(): Promise<FlowEmulator> {
+export async function createEmulator({ useDocker }: { useDocker?: boolean } = {}): Promise<FlowEmulator> {
     const port = 3569 + Number(process.env.JEST_WORKER_ID || 1)
+    const httpport = port + HTTP_PORT_OFFSET
     const host = `localhost:${port}`
     let error
     let stdout = ''
     let stderr = ''
-    const child = spawn('flow', [
+
+    const child = useDocker ? spawn('docker', [
+        'run', '-t', '--rm',
+        '-e', `FLOW_SERVICEPUBLICKEY=${FLOW_SERVICEPUBLICKEY}`,
+        '-e', `FLOW_SERVICEKEYSIGALGO=${FLOW_SERVICEKEYSIGALGO}`,
+        '-e', `FLOW_SERVICEKEYHASHALGO=${FLOW_SERVICEKEYHASHALGO}`,
+        '-p', `${port}:3569`,
+        '-p', `${httpport}:8080`,
+        'gcr.io/flow-container-registry/emulator'
+    ], {
+        detached: true
+    }) : spawn('flow', [
         'emulator', 'start',
         '--http-port', (port + HTTP_PORT_OFFSET).toString(),
-        '--port', port.toString()], {
+        '--port', port.toString()
+    ], {
         detached: true
     })
     child.on('error', (err) => {
@@ -67,7 +84,24 @@ export async function createEmulator(): Promise<FlowEmulator> {
         stdout = ''
         stderr = ''
         const command = 'flow --host ' + host + ' --output json ' + subCommand
-        const json = execSync(command).toString()
+        let json: string
+        let retry = 0
+        while(true) { // retry 10 times
+            try {
+                json = execSync(command, { timeout: EXEC_TIMEOUT } as any).toString()
+                break
+            } catch (err) {
+                if (retry < 10 &&
+                        (err?.message?.indexOf(
+                            ': client: rpc error: code = Unavailable'
+                        ) ?? -1) !== -1) {
+                    execSync('sleep 0.1')
+                    retry++
+                    continue
+                }
+                throw err
+            }
+        }
 
         let result: any
         try {
@@ -86,8 +120,9 @@ export async function createEmulator(): Promise<FlowEmulator> {
         await waitPort({ port, output: 'silent' }).then(open => { if (!open) { throw new Error(port + ' did not open') } })
         execFlow('flow accounts create --key ' + accounts['emulator-user-1'].pubkey)
         execFlow('flow accounts create --key ' + accounts['emulator-user-2'].pubkey)
-        execFlow('flow transactions send transactions/minter/add_public_key.cdc ' + accounts['minter-1'].key.pubkey)
-        execFlow('flow transactions send transactions/minter/add_public_key.cdc ' + accounts['minter-2'].key.pubkey)
+        execFlow('flow transactions send transactions/account/add_public_key.cdc ' + accounts['minter-1'].key.pubkey)
+        execFlow('flow transactions send transactions/account/add_public_key.cdc ' + accounts['minter-2'].key.pubkey)
+        execFlow('flow accounts create --key ' + accounts['agent'].pubkey)
         execFlow('flow project deploy')
 
         const emulator: FlowEmulator = {
@@ -115,7 +150,8 @@ export async function createEmulator(): Promise<FlowEmulator> {
                 return this.transactions('transactions/operator/create_item.cdc', string(itemId), uint32(version), uint32(limit), dicss(metadata), bool(active))
             },
             mintToken({recipient, refId, itemId, metadata}) {
-                return this.transactions('transactions/minter/mint_token.cdc', address('0x' + accounts[recipient].address), string(refId), string(itemId), dicss(metadata))
+                let result = this.transactions('transactions/minter/mint_token.cdc', address('0x' + accounts[recipient].address), string(refId), string(itemId), dicss(metadata))
+                return Number(result.events[0].values.value.fields[0].value.value)
             },
             options: [],
             withOptions(...options) {
@@ -133,6 +169,8 @@ export async function createEmulator(): Promise<FlowEmulator> {
         }
         return emulator
     } catch (err) {
+        console.log(stdout)
+        console.error(stderr)
         child.kill(SIGTERM)
         throw err
     }

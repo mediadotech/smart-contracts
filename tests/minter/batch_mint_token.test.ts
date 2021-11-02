@@ -1,5 +1,5 @@
-import { address, array, dicss, event, events, json, optional, resource, string, struct, uint32, uint64 } from "../utils/args"
-import { createEmulator, FlowEmulator } from "../utils/emulator"
+import { address, array, dicss, event, events, json, optional, resource, string, struct, uint32, uint64 } from "../__fixtures__/args"
+import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import flowConfig from '../../flow.json'
 
 const MINTER_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
@@ -8,14 +8,12 @@ const USER1_ADDRESS = '0x' + flowConfig.accounts["emulator-user-1"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
-    emulator.transactions('transactions/permission/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(MINTER_ADDRESS))
     emulator.createItem({ itemId: 'test-item-1', version: 1, limit: 10, metadata: {} })
     emulator.createItem({ itemId: 'test-item-2', version: 1, limit: 30, metadata: {} })
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
-    emulator.signer('emulator-user-1').transactions('transactions/permission/init_permission_receiver.cdc')
 })
 
 afterAll(() => {
@@ -23,8 +21,8 @@ afterAll(() => {
 })
 
 afterEach(() => {
-    emulator.signer('emulator-user-1').transactions('transactions/user/destroy_account.cdc')
-    emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
+    emulator?.signer('emulator-user-1').transactions('transactions/user/destroy_account.cdc')
+    emulator?.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
 })
 
 // Minterは複数のNFTを一度にmintすることができる
@@ -201,5 +199,5 @@ test('Non-Minter users cannot mint', () => {
                 array([string('test-ref-13'), string(itemId)]),
             ])
         )
-    ).toThrow('error: pre-condition failed: Roles not given cannot be borrowed')
+    ).toThrow('FanTopPermissionV2.hasPermission(account.address, role: Role.minter)')
 })
