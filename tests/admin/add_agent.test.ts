@@ -39,14 +39,14 @@ test('Admin can add Agent', () => {
     ))
 })
 
-// AdminではないユーザーはMinterを追加できない
+// AdminではないユーザーはAgentを追加できない
 test('Non-Admin users cannot add Agent', () => {
     expect(() =>
         emulator.signer('emulator-user-1').transactions('transactions/admin/add_agent.cdc', address(accounts["emulator-user-1"].address))
     ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.admin)')
 })
 
-// Adminは既存のagentを追加できない
+// Adminは既存のAgentを追加できない
 test('Admin cannot add an existing Agent', () => {
     emulator.transactions('transactions/admin/add_agent.cdc', address(accounts["emulator-user-2"].address))
 
