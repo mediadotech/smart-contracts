@@ -1,5 +1,5 @@
-import FanTopPermissionV2 from "../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../contracts/FanTopPermissionV2a.cdc"
 
 pub fun main(address: Address, role: String): Bool {
-    return FanTopPermissionV2.hasPermission(address, role: FanTopPermissionV2.getRole(role)!)
+    return FanTopPermissionV2a.hasPermission(address, role: role)
 }

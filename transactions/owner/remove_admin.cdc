@@ -1,13 +1,14 @@
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
 transaction(address: Address) {
-    let owner: FanTopPermissionV2.Owner
+    let owner: &FanTopPermissionV2a.Owner
 
     prepare(account: AuthAccount) {
-        self.owner = FanTopPermissionV2.Owner(account)
+        self.owner = account.borrow<&FanTopPermissionV2a.Owner>(from: FanTopPermissionV2a.ownerStoragePath)
+            ?? panic("No owner resource in storage")
     }
 
     execute {
-        self.owner.removePermission(address, role: FanTopPermissionV2.Role.admin)
+        self.owner.removePermission(address, role: "admin")
     }
 }

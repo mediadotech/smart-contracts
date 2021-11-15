@@ -25,7 +25,7 @@ describe('Operator', () => {
         ).toEqual({
             authorizers: '[f8d6e0586b0a20c7]',
             events: events(
-                event('A.f8d6e0586b0a20c7.FanTopPermissionV2.PermissionAdded', {
+                event('A.f8d6e0586b0a20c7.FanTopPermissionV2a.PermissionAdded', {
                     target: address(accounts["emulator-user-1"].address),
                     role: string("operator")
                 })
@@ -44,7 +44,7 @@ describe('Operator', () => {
     test('Non-Owner users cannot add Operator', () => {
         expect(() =>
             emulator.signer("emulator-user-2").transactions('transactions/owner/add_permission.cdc', address(accounts["emulator-user-1"].address), string("operator"))
-        ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.owner)')
+        ).toThrowError('error: panic: No owner resource in storage')
     })
 
     // Ownerは重複してOperatorを追加できない
@@ -80,7 +80,7 @@ describe('Minter', () => {
         ).toEqual({
             authorizers: '[f8d6e0586b0a20c7]',
             events: events(
-                event('A.f8d6e0586b0a20c7.FanTopPermissionV2.PermissionAdded', {
+                event('A.f8d6e0586b0a20c7.FanTopPermissionV2a.PermissionAdded', {
                     target: address(accounts["emulator-user-1"].address),
                     role: string("minter")
                 })
@@ -116,16 +116,21 @@ describe('Other', () => {
         emulator?.terminate()
     })
 
-    beforeEach(async ()=> {
-        try { emulator?.transactions('transactions/owner/remove_permission.cdc', address(accounts["emulator-user-1"].address), string("operator")) } catch { /* NOP */ }
-        try { emulator?.transactions('transactions/owner/remove_permission.cdc', address(accounts["emulator-user-1"].address), string("minter")) } catch { /* NOP */ }
+    beforeEach(() => {
+        emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+        emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    })
+
+    afterEach(() => {
+        try { emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc') } catch {}
+        try { emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc') } catch {}
     })
 
     // 存在しないRoleは追加できない
     test('Roles that do not exist cannot be added', () => {
         expect(() =>
             emulator.transactions('transactions/owner/add_permission.cdc', address(accounts["emulator-user-1"].address), string("abc"))
-        ).toThrowError('error: panic: Unknown roles cannot be added')
+        ).toThrowError('error: pre-condition failed: Unknown role cannot be changed')
     })
 
     // Ownerは追加できない

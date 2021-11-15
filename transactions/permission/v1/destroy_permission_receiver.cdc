@@ -1,4 +1,4 @@
-import FanTopPermission from "../../contracts/FanTopPermission.cdc"
+import FanTopPermission from "../../../contracts/FanTopPermission.cdc"
 
 transaction {
     prepare(account: AuthAccount) {

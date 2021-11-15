@@ -1,15 +1,14 @@
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
 transaction(address: Address, role: String) {
-    let owner: FanTopPermissionV2.Owner
-    let role: FanTopPermissionV2.Role
+    let owner: &FanTopPermissionV2a.Owner
 
     prepare(account: AuthAccount) {
-        self.owner = FanTopPermissionV2.Owner(account)
-        self.role = FanTopPermissionV2.getRole(role) ?? panic("Unknown roles cannot be added")
+        self.owner = account.borrow<&FanTopPermissionV2a.Owner>(from: FanTopPermissionV2a.ownerStoragePath)
+            ?? panic("No owner resource in storage")
     }
 
     execute {
-        self.owner.addPermission(address, role: self.role)
+        self.owner.addPermission(address, role: role)
     }
 }

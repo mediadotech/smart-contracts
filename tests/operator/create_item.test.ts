@@ -7,6 +7,8 @@ const OPERATOR_ADDRESS = accounts["emulator-account"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
+    emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
 })
@@ -56,7 +58,7 @@ test('Operator can create Items', async () => {
             dicss({itemName: 'Test Item 1'}),
             bool(false)
         )
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
+    ).toThrowError('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })
 
 // 重複して同じitemIdのItemをつくることはできない

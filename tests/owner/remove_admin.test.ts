@@ -26,7 +26,7 @@ test('Owner can remove Admin', () => {
     ).toEqual({
         authorizers: '[f8d6e0586b0a20c7]',
         events: events(
-            event('A.f8d6e0586b0a20c7.FanTopPermissionV2.PermissionRemoved', {
+            event('A.f8d6e0586b0a20c7.FanTopPermissionV2a.PermissionRemoved', {
                 target: address(accounts["emulator-user-1"].address),
                 role: string("admin")
             })

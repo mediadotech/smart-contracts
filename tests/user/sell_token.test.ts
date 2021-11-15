@@ -7,9 +7,14 @@ let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator({ useDocker: true })
     emulator.exec('flow transactions send transactions/user/init_account.cdc --signer emulator-user-1')
-    emulator.transactions('transactions/owner/add_permission.cdc', address(accounts['emulator-account'].address), string('operator'))
-    emulator.transactions('transactions/owner/add_permission.cdc', address(accounts['emulator-account'].address), string('minter'))
-    emulator.transactions('transactions/owner/add_permission.cdc', address(accounts['agent'].address), string('agent'))
+
+    emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator.signer('agent').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+
+    emulator.transactions('transactions/owner/add_admin.cdc', address(accounts['emulator-account'].address))
+    emulator.transactions('transactions/admin/add_operator.cdc', address(accounts['emulator-account'].address))
+    emulator.transactions('transactions/admin/add_minter.cdc', address(accounts['emulator-account'].address))
+    emulator.transactions('transactions/admin/add_agent.cdc', address(accounts['agent'].address))
 
     emulator.createItem({
         itemId: 'test-item-id-1',

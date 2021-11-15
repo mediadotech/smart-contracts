@@ -1,18 +1,18 @@
 import FanTopToken from "../../contracts/FanTopToken.cdc"
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
 transaction(to: Address, orderId: String, version: UInt32) {
-    let agent: FanTopPermissionV2.Agent
+    let agentRef: &FanTopPermissionV2a.Agent
     let collectionRef: &AnyResource{FanTopToken.CollectionPublic}
 
     prepare(account: AuthAccount) {
-        self.agent = FanTopPermissionV2.Agent(account)
-
+        self.agentRef = account.borrow<&FanTopPermissionV2a.Holder>(from: FanTopPermissionV2a.receiverStoragePath)?.borrowAgent(by: account)
+            ?? panic("No agent in storage")
         self.collectionRef = getAccount(to).getCapability(FanTopToken.collectionPublicPath).borrow<&AnyResource{FanTopToken.CollectionPublic}>()
             ?? panic("Could not get public FanTopToken collection reference")
     }
 
     execute {
-        self.agent.fulfill(orderId: orderId, version: version, recipient: self.collectionRef)
+        self.agentRef.fulfill(orderId: orderId, version: version, recipient: self.collectionRef)
     }
 }

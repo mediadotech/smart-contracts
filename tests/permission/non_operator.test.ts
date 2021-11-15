@@ -11,6 +11,24 @@ afterAll(() => {
     emulator?.terminate()
 })
 
+beforeEach(() => {
+    emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+})
+
+afterEach(() => {
+    try {
+        emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc')
+    } catch {
+        // NOP
+    }
+    try {
+        emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc')
+    } catch {
+        // NOP
+    }
+})
+
 // ロールを与えられていないユーザーはOperatorとして活動できない
 test('Users who are not given the role cannot act as Operator', () => {
     // As an Operator
@@ -23,7 +41,7 @@ test('Users who are not given the role cannot act as Operator', () => {
             dicss({}),
             bool(true)
         )
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
+    ).toThrowError('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })
 
 // ロールを削除されたユーザーはOperatorとして活動できない
@@ -42,5 +60,5 @@ test('User whose role has been deleted cannot act as Operator', () => {
             dicss({}),
             bool(true)
         )
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
+    ).toThrowError('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })

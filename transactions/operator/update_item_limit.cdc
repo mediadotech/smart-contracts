@@ -1,13 +1,14 @@
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
 transaction(itemId: String, limit: UInt32) {
-    let operator: FanTopPermissionV2.Operator
+    let operatorRef: &FanTopPermissionV2a.Operator
 
     prepare(account: AuthAccount) {
-        self.operator = FanTopPermissionV2.Operator(account)
+        self.operatorRef = account.borrow<&FanTopPermissionV2a.Holder>(from: FanTopPermissionV2a.receiverStoragePath)?.borrowOperator(by: account)
+            ?? panic("No operator in storage")
     }
 
     execute {
-        self.operator.updateLimit(itemId: itemId, limit: limit)
+        self.operatorRef.updateLimit(itemId: itemId, limit: limit)
     }
 }

@@ -8,6 +8,8 @@ let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
+    emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(OPERATOR_ADDRESS))
@@ -73,5 +75,5 @@ test('Non-Operator users cannot update Item limits', () => {
                 string(itemId),
                 uint32(10)
             )
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
+    ).toThrowError('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })
