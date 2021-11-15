@@ -5,7 +5,8 @@ import { address, bool, dicaa, dicsa, enumUint8, event, events, int, optional, s
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
-    emulator.transactions('transactions/owner/add_permission.cdc', address(accounts["emulator-account"].address), string('admin'))
+    emulator.signer('emulator-account').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator.transactions('transactions/owner/add_admin.cdc', address(accounts["emulator-account"].address))
 })
 
 afterAll(() => {
@@ -55,11 +56,13 @@ test('Capacity cannot be reduced', () => {
 
 // Adminでない者はキャパシティを拡張できない
 test('Non-Admins cannot increase capacity', () => {
+    emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+
     let capacity = Number(emulator.scripts('scripts/get_market_capacity.cdc')['value'])
 
     capacity += 1
 
     expect(() =>
         emulator.signer('emulator-user-1').transactions('transactions/admin/extend_market_capacity.cdc', int(capacity))
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.admin)')
+    ).toThrowError('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })

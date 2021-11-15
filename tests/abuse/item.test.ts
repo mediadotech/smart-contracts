@@ -7,6 +7,7 @@ const OPERATOR_ADDRESS = '0x' + flowConfig.accounts["emulator-account"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
+    emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(OPERATOR_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(OPERATOR_ADDRESS))
 })

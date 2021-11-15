@@ -1,13 +1,17 @@
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
-transaction(address: Address) {
-    let owner: FanTopPermissionV2.Owner
+transaction(receiver: Address) {
+    let ownerRef: &FanTopPermissionV2a.Owner
+    let receiverRef: &AnyResource{FanTopPermissionV2a.Receiver}
 
-    prepare(account: AuthAccount) {
-        self.owner = FanTopPermissionV2.Owner(account)
+    prepare(owner: AuthAccount) {
+        self.ownerRef = owner.borrow<&FanTopPermissionV2a.Owner>(from: FanTopPermissionV2a.ownerStoragePath)
+            ?? panic("No owner resource in storage")
+        self.receiverRef = getAccount(receiver).getCapability(FanTopPermissionV2a.receiverPublicPath).borrow<&AnyResource{FanTopPermissionV2a.Receiver}>()
+            ?? panic("No permission receiver in storage")
     }
 
     execute {
-        self.owner.addPermission(address, role: FanTopPermissionV2.Role.admin)
+        self.ownerRef.addAdmin(receiver: self.receiverRef)
     }
 }

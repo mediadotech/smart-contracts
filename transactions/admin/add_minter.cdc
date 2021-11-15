@@ -1,13 +1,17 @@
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
-transaction(address: Address) {
-    let admin: FanTopPermissionV2.Admin
+transaction(receiver: Address) {
+    let adminRef: &FanTopPermissionV2a.Admin
+    let receiverRef: &AnyResource{FanTopPermissionV2a.Receiver}
 
     prepare(account: AuthAccount) {
-        self.admin = FanTopPermissionV2.Admin(account)
+        self.adminRef = account.borrow<&FanTopPermissionV2a.Holder>(from: FanTopPermissionV2a.receiverStoragePath)?.borrowAdmin(by: account)
+            ?? panic("No admin in storage")
+        self.receiverRef = getAccount(receiver).getCapability(FanTopPermissionV2a.receiverPublicPath).borrow<&AnyResource{FanTopPermissionV2a.Receiver}>()
+            ?? panic("No permission receiver in storage")
     }
 
     execute {
-        self.admin.addMinter(address)
+        self.adminRef.addMinter(receiver: self.receiverRef)
     }
 }

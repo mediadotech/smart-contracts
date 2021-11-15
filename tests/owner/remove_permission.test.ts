@@ -29,7 +29,7 @@ describe('Operator', () => {
         ).toEqual({
             authorizers: '[f8d6e0586b0a20c7]',
             events: events(
-                event('A.f8d6e0586b0a20c7.FanTopPermissionV2.PermissionRemoved', {
+                event('A.f8d6e0586b0a20c7.FanTopPermissionV2a.PermissionRemoved', {
                     target: address(accounts["emulator-user-1"].address),
                     role: string("operator")
                 })
@@ -48,7 +48,7 @@ describe('Operator', () => {
     // Ownerではないユーザーは権限を削除できない
     test('Non-Owner users cannot remove Operator', () => {
         expect(() => emulator.signer("emulator-user-2").transactions('transactions/owner/remove_permission.cdc', address(accounts["emulator-user-1"].address), string("operator"))
-        ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.owner)')
+        ).toThrowError('error: panic: No owner resource in storage')
     })
 
     // Ownerは重複してOperatorを削除できない
@@ -87,7 +87,7 @@ describe('Minter', () => {
         ).toEqual({
             authorizers: '[f8d6e0586b0a20c7]',
             events: events(
-                event('A.f8d6e0586b0a20c7.FanTopPermissionV2.PermissionRemoved', {
+                event('A.f8d6e0586b0a20c7.FanTopPermissionV2a.PermissionRemoved', {
                     target: address(accounts["emulator-user-1"].address),
                     role: string("minter")
                 })
@@ -136,7 +136,7 @@ describe('Others', () => {
     test('Roles that do not exist cannot be deleted', () => {
         expect(() => {
             emulator.transactions('transactions/owner/remove_permission.cdc', address(accounts["emulator-user-1"].address), string("abc"))
-        }).toThrowError('error: panic: Unknown roles cannot be removed')
+        }).toThrowError('error: pre-condition failed: Unknown role cannot be changed')
     })
 
     // Ownerは削除できない

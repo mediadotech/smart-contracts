@@ -7,10 +7,17 @@ let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator({ useDocker: true })
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
-    emulator.transactions('transactions/owner/add_permission.cdc', address(accounts['emulator-account'].address), string('operator'))
-    emulator.transactions('transactions/owner/add_permission.cdc', address(accounts['emulator-account'].address), string('minter'))
-    emulator.transactions('transactions/owner/add_permission.cdc', address(accounts['agent'].address), string('agent'))
+    emulator.signer('emulator-user-2').transactions('transactions/user/init_account.cdc')
+
+    emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator.signer('agent').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+
+    emulator.transactions('transactions/owner/add_admin.cdc', address(accounts['emulator-account'].address))
+    emulator.transactions('transactions/admin/add_operator.cdc', address(accounts['emulator-account'].address))
+    emulator.transactions('transactions/admin/add_minter.cdc', address(accounts['emulator-account'].address))
+    emulator.transactions('transactions/admin/add_agent.cdc', address(accounts['agent'].address))
     emulator.createItem({ itemId: 'test-item-id-1', version: 1, limit: 1000 })
+
 })
 
 afterAll(() => {
@@ -111,5 +118,5 @@ test('Non-Agents cannot update orders', () => {
             uint32(nextVersion),
             dicss(nextMetadata)
         )
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.agent)')
+    ).toThrowError('error: panic: No agent in storage')
 })

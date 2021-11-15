@@ -5,11 +5,22 @@ import { address, bool, dicsa, event, events, optional, string, uint8 } from "..
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
+    emulator.signer('emulator-account').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(accounts["emulator-account"].address))
 })
 
 afterAll(() => {
     emulator?.terminate()
+})
+
+beforeEach(() => {
+    emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+})
+
+afterEach(() => {
+    emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc')
+    emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc')
 })
 
 // AdminはOperatorを削除できる
@@ -21,7 +32,7 @@ test('Admin can remove Operator', () => {
     ).toEqual({
         authorizers: '[f8d6e0586b0a20c7]',
         events: events(
-            event('A.f8d6e0586b0a20c7.FanTopPermissionV2.PermissionRemoved', {
+            event('A.f8d6e0586b0a20c7.FanTopPermissionV2a.PermissionRemoved', {
                 target: address(accounts["emulator-user-1"].address),
                 role: string("operator")
             })
@@ -45,7 +56,7 @@ test('Admin can remove Operator', () => {
 test('Non-Admin users cannot remove Operator', () => {
     expect(() =>
         emulator.signer("emulator-user-2").transactions('transactions/admin/remove_operator.cdc', address(accounts["emulator-user-1"].address))
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.admin)')
+    ).toThrowError('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })
 
 // Adminは重複してOperatorを削除できない

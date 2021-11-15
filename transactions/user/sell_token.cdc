@@ -1,6 +1,6 @@
 import FanTopToken from "../../contracts/FanTopToken.cdc"
 import FanTopMarket from "../../contracts/FanTopMarket.cdc"
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
 transaction(
     agent: Address,
@@ -13,9 +13,9 @@ transaction(
     keyIndex: Int
 ) {
     let capability: Capability<&FanTopToken.Collection>
-    let user: FanTopPermissionV2.User
+    let user: FanTopPermissionV2a.User
     prepare(account: AuthAccount) {
-        self.user = FanTopPermissionV2.User(account)
+        self.user = FanTopPermissionV2a.User()
         var capability = account.getCapability<&FanTopToken.Collection>(/private/FanTopTokenCollection)
         if !capability.check() {
             capability = account.link<&FanTopToken.Collection>(/private/FanTopTokenCollection, target:/storage/FanTopTokenCollection) ?? panic("Link failed")

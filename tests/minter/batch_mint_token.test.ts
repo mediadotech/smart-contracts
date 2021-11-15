@@ -8,21 +8,25 @@ const USER1_ADDRESS = '0x' + flowConfig.accounts["emulator-user-1"].address
 let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
+    emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_minter.cdc', address(MINTER_ADDRESS))
     emulator.createItem({ itemId: 'test-item-1', version: 1, limit: 10, metadata: {} })
     emulator.createItem({ itemId: 'test-item-2', version: 1, limit: 30, metadata: {} })
-    emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
+    emulator.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
 })
 
 afterAll(() => {
     emulator?.terminate()
 })
 
+beforeEach(() => {
+    emulator?.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
+})
+
 afterEach(() => {
     emulator?.signer('emulator-user-1').transactions('transactions/user/destroy_account.cdc')
-    emulator?.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
 })
 
 // Minterは複数のNFTを一度にmintすることができる
@@ -199,5 +203,5 @@ test('Non-Minter users cannot mint', () => {
                 array([string('test-ref-13'), string(itemId)]),
             ])
         )
-    ).toThrow('FanTopPermissionV2.hasPermission(account.address, role: Role.minter)')
+    ).toThrow('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })

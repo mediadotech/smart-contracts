@@ -33,7 +33,7 @@
 		"FanTopToken": "./contracts/FanTopToken.cdc",
         "FanTopMarket": "./contracts/FanTopMarket.cdc",
         "FanTopPermission": "./contracts/FanTopPermission.cdc",
-        "FanTopPermissionV2": "./contracts/FanTopPermissionV2.cdc",
+        "FanTopPermissionV2a": "./contracts/FanTopPermissionV2a.cdc",
         "Signature": "./contracts/Signature.cdc",
         "Test": "./contracts/Test.cdc"
 	},
@@ -93,7 +93,10 @@
 		"testnet": {
 			"testnet-account": [
 				"FanTopToken",
-				"FanTopPermission"
+				"FanTopPermission",
+				"FanTopPermissionV2a",
+				"FanTopMarket",
+                "Signature"
 			]
 		},
 		"emulator": {
@@ -101,7 +104,7 @@
 				"NonFungibleToken",
 				"FanTopToken",
 				"FanTopPermission",
-                "FanTopPermissionV2",
+                "FanTopPermissionV2a",
 				"FanTopMarket",
                 "Signature",
                 "Test"

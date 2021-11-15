@@ -6,7 +6,7 @@ import waitPort from 'wait-port'
 
 type AccountName = keyof typeof accounts
 
-const HTTP_PORT_OFFSET = 4511 // 3570 + 4511 = 8081
+const HTTP_PORT_OFFSET = 4512 // 3570 + 4511 = 8082
 const EXEC_TIMEOUT = 10000
 
 const FLOW_SERVICEPUBLICKEY='1ac5e6687a710717b1240ae8b68aad36a17dcd23ee01702f3115195efa16a21f11e639a73a0bc4497dd74560c029390d08d8b201b3086fe598bb6b6458783c07'
@@ -57,15 +57,11 @@ export async function createEmulator({ useDocker }: { useDocker?: boolean } = {}
         '-p', `${port}:3569`,
         '-p', `${httpport}:8080`,
         'gcr.io/flow-container-registry/emulator'
-    ], {
-        detached: true
-    }) : spawn('flow', [
+    ]) : spawn('flow', [
         'emulator', 'start',
         '--http-port', (port + HTTP_PORT_OFFSET).toString(),
         '--port', port.toString()
-    ], {
-        detached: true
-    })
+    ])
     child.on('error', (err) => {
         error = err
     })

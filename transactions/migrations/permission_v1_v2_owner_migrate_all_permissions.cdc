@@ -1,14 +1,14 @@
 import FanTopPermission from "../../contracts/FanTopPermission.cdc"
-import FanTopPermissionV2 from "../../contracts/FanTopPermissionV2.cdc"
+import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
-pub fun toV2Role(_ v1: FanTopPermission.Role): FanTopPermissionV2.Role? {
+pub fun toV2Role(_ v1: FanTopPermission.Role): String? {
     switch v1 {
     case FanTopPermission.Role.admin:
-        return FanTopPermissionV2.Role.admin
+        return "admin"
     case FanTopPermission.Role.operator:
-        return FanTopPermissionV2.Role.operator
+        return "operator"
     case FanTopPermission.Role.minter:
-        return FanTopPermissionV2.Role.minter
+        return "minter"
     default:
         return nil
     }
@@ -16,12 +16,12 @@ pub fun toV2Role(_ v1: FanTopPermission.Role): FanTopPermissionV2.Role? {
 
 transaction() {
     let ownerV1: &FanTopPermission.Owner
-    let ownerV2: FanTopPermissionV2.Owner
+    let ownerV2: FanTopPermissionV2a.Owner
 
     prepare(owner: AuthAccount) {
-        self.ownerV1 = owner.borrow<&FanTopPermission.Owner>(from: /storage/FanTopOwner)
+        self.ownerV1 = owner.borrow<&FanTopPermission.Owner>(from: FanTopPermissionV2a.ownerStoragePath)
             ?? panic("No owner resource in storage")
-        self.ownerV2 = FanTopPermissionV2.Owner(owner)
+        self.ownerV2 = FanTopPermissionV2a.Owner(owner)
     }
 
     execute {

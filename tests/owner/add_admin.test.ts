@@ -11,6 +11,16 @@ afterAll(() => {
     emulator?.terminate()
 })
 
+beforeEach(() => {
+    emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+})
+
+afterEach(() => {
+    try { emulator?.signer('emulator-user-1').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc') } catch {}
+    try { emulator?.signer('emulator-user-2').transactions('transactions/permission/v2a/destroy_permission_receiver.cdc') } catch {}
+})
+
 // OwnerはAdminを追加できる
 test('Owner can add Admin', () => {
     expect(
@@ -18,7 +28,7 @@ test('Owner can add Admin', () => {
     ).toEqual({
         authorizers: '[f8d6e0586b0a20c7]',
         events: events(
-            event('A.f8d6e0586b0a20c7.FanTopPermissionV2.PermissionAdded', {
+            event('A.f8d6e0586b0a20c7.FanTopPermissionV2a.PermissionAdded', {
                 target: address(accounts["emulator-user-1"].address),
                 role: string("admin")
             })
@@ -42,7 +52,7 @@ test('Owner can add Admin', () => {
 test('Non-Owner users cannot add Admin', () => {
     expect(() =>
         emulator.signer('emulator-user-1').transactions('transactions/owner/add_admin.cdc', address(accounts["emulator-user-2"].address))
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.owner)')
+    ).toThrowError('error: panic: No owner resource in storage')
 })
 
 // Ownerは既存のAdminを追加できない

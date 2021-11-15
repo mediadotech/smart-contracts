@@ -8,6 +8,8 @@ let emulator: FlowEmulator
 beforeAll(async () => {
     emulator = await createEmulator()
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
+    emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
+    emulator.signer('emulator-user-1').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
     emulator.transactions('transactions/user/init_account.cdc')
     emulator.transactions('transactions/owner/add_admin.cdc', address(MINTER_ADDRESS))
     emulator.transactions('transactions/admin/add_operator.cdc', address(MINTER_ADDRESS))
@@ -85,5 +87,5 @@ test('Non-Operator users cannot activate Item', async () => {
             string('test-item-id-5'),
             bool(true)
         )
-    ).toThrowError('FanTopPermissionV2.hasPermission(account.address, role: Role.operator)')
+    ).toThrowError('FanTopPermissionV2a.hasPermission(by.address, role: role)')
 })
