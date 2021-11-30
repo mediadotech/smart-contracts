@@ -7,7 +7,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: test
         run: |
-          sh -ci "$(curl -fsSL https://storage.googleapis.com/flow-cli/install.sh)" -- v0.28.3
+          sh -ci "$(curl -fsSL https://storage.googleapis.com/flow-cli/install.sh)" -- v0.29.0
           npm i
           npm test
         env:

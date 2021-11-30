@@ -66,10 +66,14 @@ function createUint64BEBuffer(arg: number): Buffer {
     return buff
 }
 
-function createKVSBuffer(arg: {[key: string]: string}): Buffer {
-    const buffs = Object.keys(arg).map((key) =>
-        Buffer.concat([Buffer.from(key, 'utf-8'), Buffer.from(arg[key], 'utf-8')])
-    )
+function createKVSBuffer(arg: string[]): Buffer {
+    const buffs: Buffer[] = []
+    for (let i = 0; i < arg.length; i += 2) {
+        const key = arg[i]
+        const value = arg[i+1]
+        buffs.push(Buffer.from(key, 'utf-8'))
+        buffs.push(Buffer.from(value, 'utf-8'))
+    }
     return Buffer.concat(buffs)
 }
 
@@ -83,19 +87,20 @@ export function signSellOrder({
     refId: string,
     nftId: number,
     version: number,
-    metadata: {[key: string]: string},
+    metadata: string[],
     key: FlowKey
 }) {
     const privKey = Buffer.from(key.privateKey, 'hex')
-    let buffer = Buffer.alloc(0)
-    buffer = Buffer.concat([buffer, Buffer.from(agent.replace(/^0x/, ''), 'hex')])
-    buffer = Buffer.concat([buffer, Buffer.from(from.replace(/^0x/, ''), 'hex')])
-    buffer = Buffer.concat([buffer, Buffer.from(orderId, 'utf-8')])
-    buffer = Buffer.concat([buffer, Buffer.from(refId, 'utf-8')])
-    buffer = Buffer.concat([buffer, createUint64BEBuffer(nftId)])
-    buffer = Buffer.concat([buffer, createUint32BEBuffer(version)])
-    buffer = Buffer.concat([buffer, createKVSBuffer(metadata)])
-    buffer = Buffer.concat([buffer, Buffer.from(key.index.toString(), 'utf-8')])
+    let buffer = Buffer.concat([
+        Buffer.from(agent.replace(/^0x/, ''), 'hex'),
+        Buffer.from(from.replace(/^0x/, ''), 'hex'),
+        Buffer.from(orderId, 'utf-8'),
+        Buffer.from(refId, 'utf-8'),
+        createUint64BEBuffer(nftId),
+        createUint32BEBuffer(version),
+        createKVSBuffer(metadata),
+        Buffer.from(key.index.toString(), 'utf-8')
+    ])
 
     return {
         params: { agent, from, orderId, refId, nftId, version, metadata },

@@ -5,7 +5,7 @@ import prepareOrder from "../__fixtures__/prepare-order"
 
 let emulator: FlowEmulator
 beforeAll(async () => {
-    emulator = await createEmulator({ useDocker: true })
+    emulator = await createEmulator()
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
     emulator.signer('emulator-user-2').transactions('transactions/user/init_account.cdc')
 
@@ -25,7 +25,7 @@ afterAll(() => {
 
 // エージェントは注文を履行できる
 test('Agent can fulfill order', async () => {
-    const order = prepareOrder({ emulator, account: 'emulator-user-1' })
+    const order = await prepareOrder({ emulator, account: 'emulator-user-1' })
     expect(
         emulator.signer('agent').transactions('transactions/agent/fulfill_order.cdc',
             address(accounts["emulator-user-2"].address),
@@ -90,8 +90,8 @@ test('Orders that do not exist cannot be fulfilled', () => {
 })
 
 // バージョンが一致していない注文は履行できない
-test('Orders that do not match versions cannot be fulfilled', () => {
-    const order = prepareOrder({ emulator, account: 'emulator-user-1' })
+test('Orders that do not match versions cannot be fulfilled', async () => {
+    const order = await prepareOrder({ emulator, account: 'emulator-user-1' })
     const olderVersion = order.version - 1
     expect(() =>
         emulator.signer('agent').transactions('transactions/agent/fulfill_order.cdc',
@@ -103,8 +103,8 @@ test('Orders that do not match versions cannot be fulfilled', () => {
 })
 
 // Agentでない者は注文を履行できない
-test('Non-Agent cannot fulfill order', () => {
-    const order = prepareOrder({ emulator, account: 'emulator-user-1' })
+test('Non-Agent cannot fulfill order', async () => {
+    const order = await prepareOrder({ emulator, account: 'emulator-user-1' })
     expect(() =>
         emulator.signer('emulator-user-2').transactions('transactions/agent/fulfill_order.cdc',
             address(accounts["emulator-user-2"].address),
@@ -115,8 +115,8 @@ test('Non-Agent cannot fulfill order', () => {
 })
 
 // 注文後にNFTが消滅したオーダーは履行できない
-test('Orders for which NFTs have disappeared after the order cannot be fulfilled', () => {
-    const order = prepareOrder({ emulator, account: 'emulator-user-1' })
+test('Orders for which NFTs have disappeared after the order cannot be fulfilled', async () => {
+    const order = await prepareOrder({ emulator, account: 'emulator-user-1' })
 
     emulator.signer('emulator-user-1').transactions('transactions/user/transfer_token.cdc', uint64(order.nftId), address(accounts["emulator-user-2"].address))
 
@@ -130,8 +130,8 @@ test('Orders for which NFTs have disappeared after the order cannot be fulfilled
 })
 
 // 注文後にコレクションが消滅したオーダーは履行できない
-test('Orders whose collection has disappeared after the order cannot be fulfilled', () => {
-    const order = prepareOrder({ emulator, account: 'emulator-user-1' })
+test('Orders whose collection has disappeared after the order cannot be fulfilled', async () => {
+    const order = await prepareOrder({ emulator, account: 'emulator-user-1' })
 
     emulator.signer('emulator-user-1').transactions('transactions/user/destroy_account.cdc')
 

@@ -5,7 +5,7 @@ import prepareOrder from "../__fixtures__/prepare-order"
 
 let emulator: FlowEmulator
 beforeAll(async () => {
-    emulator = await createEmulator({ useDocker: true })
+    emulator = await createEmulator()
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
     emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
     emulator.signer('agent').transactions('transactions/permission/v2a/init_permission_receiver.cdc')
@@ -23,7 +23,7 @@ afterAll(() => {
 
 // Agentはユーザーのオーダーをキャンセルできる
 test('Agent can cancel user\'s order', async () => {
-    let order = prepareOrder({ emulator, account: 'emulator-user-1'})
+    let order = await prepareOrder({ emulator, account: 'emulator-user-1'})
 
     expect(
         emulator.signer('agent').transactions('transactions/agent/cancel_order.cdc', string(order.orderId))
@@ -59,8 +59,8 @@ test('Orders that do not exist cannot be canceled', () => {
 })
 
 // Agentではない者はオーダーをキャンセルできない
-test('Non-Agents cannot cancel orders', () => {
-    let order = prepareOrder({ emulator, account: 'emulator-user-1'})
+test('Non-Agents cannot cancel orders', async () => {
+    let order = await prepareOrder({ emulator, account: 'emulator-user-1'})
     expect(() =>
         emulator.signer('emulator-user-1').transactions('transactions/agent/cancel_order.cdc', string(order.orderId))
     ).toThrowError('error: panic: No agent in storage')

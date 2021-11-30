@@ -5,7 +5,7 @@ import prepareOrder from "../__fixtures__/prepare-order"
 
 let emulator: FlowEmulator
 beforeAll(async () => {
-    emulator = await createEmulator({ useDocker: true })
+    emulator = await createEmulator()
     emulator.signer('emulator-user-1').transactions('transactions/user/init_account.cdc')
     emulator.signer('emulator-user-2').transactions('transactions/user/init_account.cdc')
 
@@ -26,7 +26,7 @@ afterAll(() => {
 
 // Agentはオーダーのメタデータを更新することができる
 test('Agent can update order metadata', async () => {
-    let order = prepareOrder({ emulator, account: 'emulator-user-1'})
+    let order = await prepareOrder({ emulator, account: 'emulator-user-1'})
 
     const nextVersion = order.version + 1
     const nextMetadata = { exInfo: 'Updated to ' + nextVersion }
@@ -70,7 +70,7 @@ test('Agent can update order metadata', async () => {
 
 // 同じバージョンでアップデートはできない
 test('Cannot be updated with the same version', async () => {
-    let order = prepareOrder({ emulator, account: 'emulator-user-1'})
+    let order = await prepareOrder({ emulator, account: 'emulator-user-1'})
 
     expect(() =>
         emulator.signer('agent').transactions(
@@ -106,8 +106,8 @@ test('Orders that do not exist cannot be updated', () => {
 })
 
 // Agentではない者はオーダーをアップデートできない
-test('Non-Agents cannot update orders', () => {
-    let order = prepareOrder({ emulator, account: 'emulator-user-1'})
+test('Non-Agents cannot update orders', async () => {
+    let order = await prepareOrder({ emulator, account: 'emulator-user-1'})
 
     const nextVersion = order.version + 1
     const nextMetadata = { exInfo: 'Updated to ' + nextVersion }
