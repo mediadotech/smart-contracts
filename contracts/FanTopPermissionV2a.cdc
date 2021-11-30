@@ -138,7 +138,7 @@ pub contract FanTopPermissionV2a {
             refId: String,
             nftId: UInt64,
             version: UInt32,
-            metadata: { String: String },
+            metadata: [String],
             signature: [UInt8],
             keyIndex: Int
         ) {
@@ -155,9 +155,16 @@ pub contract FanTopPermissionV2a {
                 .concat(nftId.toBigEndianBytes())
                 .concat(version.toBigEndianBytes())
 
-            for key in metadata.keys {
-                let value = metadata[key]!
+            let flatMetadata: { String: String } = {}
+            var i = 0
+            while i < metadata.length {
+                let key = metadata[i]
+                let value = metadata[i+1]
+
                 signedData = signedData.concat(key.utf8).concat(value.utf8)
+                flatMetadata[key] = value
+
+                i = i + 2
             }
 
             signedData = signedData.concat(keyIndex.toString().utf8)
@@ -179,7 +186,7 @@ pub contract FanTopPermissionV2a {
                 refId: refId,
                 nftId: nftId,
                 version: version,
-                metadata: metadata
+                metadata: flatMetadata
             )
         }
     }

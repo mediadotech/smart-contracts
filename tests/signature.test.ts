@@ -1,6 +1,6 @@
 import { createEmulator, FlowEmulator } from "./__fixtures__/emulator"
 import { accounts } from '../flow.json'
-import { bool, int, string } from "./__fixtures__/args"
+import { address, bool, int, string } from "./__fixtures__/args"
 import { signSellOrder } from "./__fixtures__/sign-sell-order"
 
 const additionalKey = {
@@ -12,7 +12,7 @@ const additionalKey = {
 
 let emulator: FlowEmulator
 beforeAll(async () => {
-    emulator = await createEmulator({ useDocker: true })
+    emulator = await createEmulator()
     emulator.signer('agent').transactions('transactions/account/add_public_key.cdc', string(additionalKey.publicKey))
 })
 
@@ -29,7 +29,7 @@ test('Signature matches', () => {
         refId: 'ref-id-1',
         nftId: 123,
         version: 1234,
-        metadata: { exInfo: 'exInfo' },
+        metadata: ['exInfo', 'exInfo'],
         key: {
             index: 0,
             privateKey: accounts.agent.key
@@ -37,7 +37,7 @@ test('Signature matches', () => {
     })
 
     expect(
-        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), int(0))
+        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), address(accounts.agent.address), int(0))
     ).toEqual(bool(true))
 })
 
@@ -50,7 +50,7 @@ test('Signatures do not match', () => {
         refId: 'ref-id-1',
         nftId: 123,
         version: 1234,
-        metadata: { exInfo: 'exInfo' },
+        metadata: ['exInfo', 'exInfo'],
         key: {
             index: 0,
             privateKey: accounts.agent.key
@@ -64,7 +64,7 @@ test('Signatures do not match', () => {
         refId: 'ref-id-1',
         nftId: 123,
         version: 1234,
-        metadata: { exInfo: 'aaaa' }, // do no match
+        metadata: ['exInfo', 'aaaa'], // do no match
         key: {
             index: 0,
             privateKey: accounts.agent.key
@@ -72,7 +72,7 @@ test('Signatures do not match', () => {
     })
 
     expect(
-        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), int(0))
+        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), address(accounts.agent.address), int(0))
     ).toEqual(bool(false))
 })
 
@@ -85,12 +85,12 @@ test('keyIndex can be specified', () => {
         refId: 'ref-id-1',
         nftId: 123,
         version: 1234,
-        metadata: { exInfo: 'exInfo' },
+        metadata: ['exInfo', 'exInfo'],
         key: additionalKey // keyIndex: 1
     })
 
     expect(
-        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), int(additionalKey.index)) // keyIndex: 1
+        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), address(accounts.agent.address), int(additionalKey.index)) // keyIndex: 1
     ).toEqual(bool(true))
 })
 
@@ -105,11 +105,11 @@ test('Revoked key cannot be used', () => {
         refId: 'ref-id-1',
         nftId: 123,
         version: 1234,
-        metadata: { exInfo: 'exInfo' },
+        metadata: ['exInfo', 'exInfo'],
         key: additionalKey // keyIndex: 1
     })
 
     expect(() =>
-        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), int(additionalKey.index)) // keyIndex: 1
+        emulator.scripts('./scripts/test_signature.cdc', string(signature), string(signedData), address(accounts.agent.address), int(additionalKey.index)) // keyIndex: 1
     ).toThrowError('error: assertion failed: Revoked keys cannot be used')
 })

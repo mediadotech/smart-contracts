@@ -99,7 +99,7 @@ test('Minter can mint multiple NFTs at once', async () => {
     expect(
         emulator.scripts('scripts/get_tokens.cdc', address(USER1_ADDRESS))
     ).toEqual(
-        array([
+        array(expect.toIncludeSameMembers([
             optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
                 id: uint64(1),
@@ -148,7 +148,7 @@ test('Minter can mint multiple NFTs at once', async () => {
                     metadata: dicss({})
                 })
             }))
-        ])
+        ]))
     )
 })
 

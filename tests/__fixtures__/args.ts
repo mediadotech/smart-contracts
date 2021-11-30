@@ -98,6 +98,10 @@ export function array(value: any) {
     }
 }
 
+export function arrays(value: string[]) {
+    return array(value.map(string))
+}
+
 export function optional(value: any) {
     return {
         type: 'Optional',

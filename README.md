@@ -7,7 +7,7 @@ TODO.
 ## Prerequire
 
 - node  v14.x or above
-- flow-cli v0.25.x or above
+- flow-cli v0.29.x or above
 
 ## Setup & Test
 

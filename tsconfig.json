@@ -9,5 +9,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowJs": true
-  }
+  },
+  "files": ["global.d.ts"]
 }

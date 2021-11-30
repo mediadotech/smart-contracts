@@ -1,11 +1,11 @@
 import { createEmulator, FlowEmulator } from '../__fixtures__/emulator'
-import { address, dicss, string, uint32, uint64, event, events, json, array, optional, int, struct, bool } from '../__fixtures__/args'
+import { address, dicss, string, uint32, uint64, event, events, json, array, optional, int, struct, bool, arrays } from '../__fixtures__/args'
 import { accounts } from '../../flow.json'
 import { signSellOrder, getNormarizedFlowKey, AccountKey } from '../__fixtures__/sign-sell-order'
 
 let emulator: FlowEmulator
 beforeAll(async () => {
-    emulator = await createEmulator({ useDocker: true })
+    emulator = await createEmulator()
     emulator.exec('flow transactions send transactions/user/init_account.cdc --signer emulator-user-1')
 
     emulator.transactions('transactions/permission/v2a/init_permission_receiver.cdc')
@@ -26,6 +26,12 @@ beforeAll(async () => {
 afterAll(() => {
     emulator?.terminate()
 })
+
+function exdicss(args: {[key: string]: string}) {
+    const exdic = dicss(args)
+    exdic.value = expect.toIncludeSameMembers(exdic.value)
+    return exdic
+}
 
 let mintCount = 1
 function mint(account: AccountKey) {
@@ -49,7 +55,7 @@ test('Users can sell owned NFTs', async () => {
         orderId: 'order-id-1',
         refId, nftId,
         version: 1,
-        metadata: { price: '123 JPY', exInfo: 'Test' },
+        metadata: ['price', '123 JPY', 'exInfo', 'Test'],
         key
     })
 
@@ -60,7 +66,7 @@ test('Users can sell owned NFTs', async () => {
             string(refId),
             uint64(nftId),
             uint32(version),
-            dicss(metadata),
+            arrays(metadata),
             string(signature),
             int(key.index)
         )
@@ -74,7 +80,10 @@ test('Users can sell owned NFTs', async () => {
                 refId: string(refId),
                 nftId: uint64(nftId),
                 version: uint32(version),
-                metadata: dicss(metadata)
+                metadata: exdicss({
+                    price: '123 JPY',
+                    exInfo: 'Test'
+                })
             }),
         ),
         id: expect.any(String),
@@ -92,7 +101,10 @@ test('Users can sell owned NFTs', async () => {
             refId: string(refId),
             nftId: uint64(nftId),
             version: uint32(version),
-            metadata: dicss(metadata)
+            metadata: exdicss({
+                price: '123 JPY',
+                exInfo: 'Test'
+            })
         })
     ))
     expect(emulator.scripts('scripts/contains_nft_id.cdc', uint64(nftId))).toEqual(bool(true))
@@ -110,7 +122,7 @@ test('Users cannot sell NFTs they do not own', () => {
         orderId: 'order-id-2',
         refId, nftId,
         version: 1,
-        metadata: { price: '123 JPY', exInfo: 'Test' },
+        metadata: [ 'price', '123 JPY', 'exInfo', 'Test' ],
         key
     })
 
@@ -121,7 +133,7 @@ test('Users cannot sell NFTs they do not own', () => {
             string(refId),
             uint64(nftId),
             uint32(version),
-            dicss(metadata),
+            arrays(metadata),
             string(signature),
             int(key.index)
         )
@@ -148,7 +160,7 @@ test('Order ID cannot be duplicated', () => {
         refId: minted1.refId,
         nftId: minted1.nftId,
         version: 1,
-        metadata: { price: '123 JPY', exInfo: 'Test' },
+        metadata: ['price', '123 JPY', 'exInfo', 'Test'],
         key
     })
     const order2 = signSellOrder({
@@ -158,7 +170,7 @@ test('Order ID cannot be duplicated', () => {
         refId: minted2.refId,
         nftId: minted2.nftId,
         version: 1,
-        metadata: { price: '123 JPY', exInfo: 'Test' },
+        metadata: ['price', '123 JPY', 'exInfo', 'Test'],
         key
     })
 
@@ -168,7 +180,7 @@ test('Order ID cannot be duplicated', () => {
         string(minted1.refId),
         uint64(minted1.nftId),
         uint32(order1.params.version),
-        dicss(order1.params.metadata),
+        arrays(order1.params.metadata),
         string(order1.signature),
         int(key.index)
     )
@@ -180,7 +192,7 @@ test('Order ID cannot be duplicated', () => {
             string(minted2.refId),
             uint64(minted2.nftId),
             uint32(order2.params.version),
-            dicss(order2.params.metadata),
+            arrays(order2.params.metadata),
             string(order2.signature),
             int(key.index)
         )
@@ -200,7 +212,7 @@ test('NFTs to be listed cannot be duplicated', () => {
         refId: minted.refId,
         nftId: minted.nftId,
         version: 1,
-        metadata: { price: '123 JPY', exInfo: 'Test' },
+        metadata: ['price', '123 JPY', 'exInfo', 'Test'],
         key
     })
     const order2 = signSellOrder({
@@ -210,7 +222,7 @@ test('NFTs to be listed cannot be duplicated', () => {
         refId: minted.refId,
         nftId: minted.nftId,
         version: 1,
-        metadata: { price: '123 JPY', exInfo: 'Test' },
+        metadata: ['price', '123 JPY', 'exInfo', 'Test'],
         key
     })
 
@@ -220,7 +232,7 @@ test('NFTs to be listed cannot be duplicated', () => {
         string(minted.refId),
         uint64(minted.nftId),
         uint32(order1.params.version),
-        dicss(order1.params.metadata),
+        arrays(order1.params.metadata),
         string(order1.signature),
         int(key.index)
     )
@@ -232,7 +244,7 @@ test('NFTs to be listed cannot be duplicated', () => {
             string(minted.refId),
             uint64(minted.nftId),
             uint32(order2.params.version),
-            dicss(order2.params.metadata),
+            arrays(order2.params.metadata),
             string(order2.signature),
             int(key.index)
         )

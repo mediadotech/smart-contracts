@@ -18,7 +18,11 @@ transaction(recipient: Address, args: [[AnyStruct]]) {
         for arg in args {
             let refId = arg[0] as! String
             let itemId = arg[1] as! String
-            let metadata = arg.length == 3 ? arg[2] as! {String: String} : {}
+            let metadataArg = arg.length == 3 ? arg[2] as! {String: AnyStruct} : {}
+            let metadata: {String: String} = {}
+            for key in metadataArg.keys {
+                metadata.insert(key: key, metadataArg[key]! as! String)
+            }
 
             assert(!refIds.contains(refId), message: "NFT with duplicate refId is not issued")
 

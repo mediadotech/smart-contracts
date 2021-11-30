@@ -8,13 +8,18 @@ transaction(
     refId: String,
     nftId: UInt64,
     version: UInt32,
-    metadata: { String: String },
+    metadata: [String],
     signature: String,
     keyIndex: Int
 ) {
     let capability: Capability<&FanTopToken.Collection>
     let user: FanTopPermissionV2a.User
+
     prepare(account: AuthAccount) {
+        pre {
+            metadata.length % 2 == 0: "Unpaired metadata cannot be used"
+        }
+
         self.user = FanTopPermissionV2a.User()
         var capability = account.getCapability<&FanTopToken.Collection>(/private/FanTopTokenCollection)
         if !capability.check() {
