@@ -24,25 +24,21 @@ afterAll(() => {
     emulator?.terminate()
 })
 
-var orders = []
-afterEach(async () => {
-    if (!emulator) {
-        return
-    }
+afterEach(() => {
+    const orderIds = emulator?.scripts('scripts/get_all_sell_order_ids.cdc')['value'].map(o => o.value) ?? []
     // cancel all
-    for (const order of orders) {
-        emulator.signer('agent').transactions('transactions/agent/cancel_order.cdc', string(order.orderId))
+    for (const orderId of orderIds) {
+        emulator?.signer('agent').transactions('transactions/agent/cancel_order.cdc', string(orderId))
     }
-    orders = []
 })
 
 // ユーザーが一つのlistに3つオーダーを追加するとカウントは3つになる
 test('If the user adds 3 orders to one list, the count will be 3', async () => {
-    orders = [
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-        await prepareOrder({ emulator, account: 'emulator-user-1' })
-    ]
+
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+    await prepareOrder({ emulator, account: 'emulator-user-1' })
+
     expect(emulator.scripts('scripts/get_sell_order_list_counts.cdc')).toEqual(dicaa([{
         key: int(0), value: int(3)
     }]))
@@ -51,10 +47,10 @@ test('If the user adds 3 orders to one list, the count will be 3', async () => {
 // 3つのListに2つのオーダーを追加するとカウントは1,1,0になる
 test('Adding 2 orders to 3 Lists will count 1,1,0', async () => {
     emulator.transactions('transactions/admin/extend_market_capacity.cdc', int(3))
-    orders = [
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-    ]
+
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+
     expect(emulator.scripts('scripts/get_sell_order_list_counts.cdc')).toEqual(dicaa(
         expect.toIncludeSameMembers([
             { key: int(0), value: int(1) },
@@ -66,12 +62,12 @@ test('Adding 2 orders to 3 Lists will count 1,1,0', async () => {
 
 // 3つのListに4つのオーダーを追加するとカウントは2,1,1になる
 test('Adding 4 orders to 3 Lists will count 2,1,1', async () => {
-    orders = [
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-        await prepareOrder({ emulator, account: 'emulator-user-1' }),
-    ]
+
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+    await prepareOrder({ emulator, account: 'emulator-user-1' }),
+
     expect(emulator.scripts('scripts/get_sell_order_list_counts.cdc')).toEqual(dicaa(
         expect.toIncludeSameMembers([
             { key: int(0), value: int(2) },
@@ -105,8 +101,6 @@ test('Orders are added to the list with the lowest count', async () => {
             { key: int(2), value: int(1) }
         ])
     ))
-
-    orders = [order1, order3, order4]
 })
 
 // オーダーをアップデートするときは平坦化する
@@ -137,6 +131,4 @@ test('Flatten when updating orders', async () => {
             { key: int(2), value: int(1) }
         ])
     ))
-
-    orders = [order1, order3, order4]
 })

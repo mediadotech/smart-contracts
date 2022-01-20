@@ -7,7 +7,7 @@ import waitPort from 'wait-port'
 type AccountName = keyof typeof accounts
 
 const HTTP_PORT_OFFSET = 4512 // 3570 + 4511 = 8082
-const EXEC_TIMEOUT = 10000
+const EXEC_TIMEOUT = 120000
 
 const FLOW_SERVICEPUBLICKEY='1ac5e6687a710717b1240ae8b68aad36a17dcd23ee01702f3115195efa16a21f11e639a73a0bc4497dd74560c029390d08d8b201b3086fe598bb6b6458783c07'
 const FLOW_SERVICEKEYSIGALGO='ECDSA_P256'
@@ -42,7 +42,7 @@ export interface FlowEmulator {
 }
 
 export async function createEmulator({ useDocker }: { useDocker?: boolean } = {}): Promise<FlowEmulator> {
-    const port = 3569 + Number(process.env.JEST_WORKER_ID || 1)
+    const port = 3570 + Number(process.env.JEST_WORKER_ID || 1)
     const httpport = port + HTTP_PORT_OFFSET
     const host = `localhost:${port}`
     let error

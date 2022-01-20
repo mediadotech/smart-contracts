@@ -34,6 +34,7 @@
         "FanTopMarket": "./contracts/FanTopMarket.cdc",
         "FanTopPermission": "./contracts/FanTopPermission.cdc",
         "FanTopPermissionV2a": "./contracts/FanTopPermissionV2a.cdc",
+		"FanTopSerial": "./contracts/FanTopSerial.cdc",
         "Signature": "./contracts/Signature.cdc",
         "Test": "./contracts/Test.cdc"
 	},
@@ -96,6 +97,7 @@
 				"FanTopPermission",
 				"FanTopPermissionV2a",
 				"FanTopMarket",
+				"FanTopSerial",
                 "Signature"
 			]
 		},
@@ -106,6 +108,7 @@
 				"FanTopPermission",
                 "FanTopPermissionV2a",
 				"FanTopMarket",
+				"FanTopSerial",
                 "Signature",
                 "Test"
 			]
