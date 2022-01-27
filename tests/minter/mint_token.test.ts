@@ -1,4 +1,4 @@
-import { address, array, dicss, event, events, json, optional, resource, string, struct, uint32, uint64 } from "../__fixtures__/args"
+import { address, array, dicss, event, events, json, optional, resource, string, struct, uint32, uint64, uint64On18652 } from "../__fixtures__/args"
 import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import flowConfig from '../../flow.json'
 
@@ -56,7 +56,7 @@ test('Minter can mint NFT', async () => {
         emulator.scripts('scripts/get_tokens.cdc', address(USER1_ADDRESS)
     )).toEqual(array([optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
         uuid: uint64(expect.any(String)),
-        id: uint64(1),
+        id: uint64On18652(1),
         refId: string('test-ref-id-1'),
         data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
             serialNumber: uint32(1),

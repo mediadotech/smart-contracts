@@ -1,4 +1,4 @@
-import { string, uint32, uint64, address, dicss, json, array, optional, resource, struct, events, event } from "../__fixtures__/args"
+import { string, uint32, uint64, address, dicss, json, array, optional, resource, struct, events, event, uint64On18652 } from "../__fixtures__/args"
 import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import { accounts } from '../../flow.json'
 
@@ -38,17 +38,17 @@ test('A user can transfer an NFT to another user', async () => {
 
     expect(emulator.signer('emulator-user-1').transactions(
         'transactions/user/transfer_token.cdc',
-        uint64(1),
+        uint64On18652(1),
         address(USER2_ADDRESS)
     )).toEqual({
         authorizers: expect.any(String),
         events: events(
             event('A.f8d6e0586b0a20c7.FanTopToken.Withdraw', {
-                id: uint64(1),
+                id: uint64On18652(1),
                 from: optional(address(USER1_ADDRESS))
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
-                id: uint64(1),
+                id: uint64On18652(1),
                 to: optional(address(USER2_ADDRESS))
             })
         ),
@@ -70,7 +70,7 @@ test('A user can transfer an NFT to another user', async () => {
             optional(
                 resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
-                id: uint64(1),
+                id: uint64On18652(1),
                 refId: string('test-ref-id-1'),
                 data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(1),
@@ -96,7 +96,7 @@ test('Users cannot transfer NFTs to non-existent users', async () => {
     expect(() =>
         emulator.signer('emulator-user-1').transactions(
             'transactions/user/transfer_token.cdc',
-            uint64(1), address('0x0000000000000000')
+            uint64On18652(1), address('0x0000000000000000')
         )
     ).toThrow('That withdrawID does not exist')
 
@@ -108,7 +108,7 @@ test('Users cannot transfer NFTs to non-existent users', async () => {
         optional(
             resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
-                id: uint64(2),
+                id: uint64On18652(2),
                 refId: string('test-ref-id-2'),
                 data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(2),
@@ -126,7 +126,7 @@ test('Users cannot transfer NFTs they do not own to others', async () => {
     expect(() =>
         emulator.signer('emulator-user-1').transactions(
             'transactions/user/transfer_token.cdc',
-            uint64(123), address('0x0000000000000000')
+            uint64On18652(123), address('0x0000000000000000')
         )
     ).toThrow('That withdrawID does not exist')
 })
