@@ -79,6 +79,14 @@ pub contract FanTopToken: NonFungibleToken {
             return self.mintedCount
         }
 
+        access(contract) fun setMintedCount(_ mintedCount: UInt32) {
+            pre {
+                mintedCount > self.mintedCount: "mintedCount must be higher than before"
+                mintedCount <= self.limit: "mintedCount must not exceed limit"
+            }
+            self.mintedCount = mintedCount
+        }
+
         pub fun getData(): ItemData {
             return self.versions[self.version]!
         }
@@ -299,7 +307,7 @@ pub contract FanTopToken: NonFungibleToken {
         metadata: { String: String }
     ): @NFT {
         pre {
-            FanTopToken.items.containsKey(itemId) != nil: "That itemId does not exist"
+            FanTopToken.items.containsKey(itemId): "That itemId does not exist"
             itemVersion == FanTopToken.items[itemId]!.version : "That itemVersion did not match the latest version"
             !FanTopToken.items[itemId]!.isFulfilled(): "Fulfilled items cannot be mint"
             FanTopToken.items[itemId]!.active: "Only active items can be mint"
@@ -331,7 +339,7 @@ pub contract FanTopToken: NonFungibleToken {
         serialNumber: UInt32
     ): @NFT {
         pre {
-            FanTopToken.items.containsKey(itemId) != nil: "That itemId does not exist"
+            FanTopToken.items.containsKey(itemId): "That itemId does not exist"
             itemVersion == FanTopToken.items[itemId]!.version : "That itemVersion did not match the latest version"
             !FanTopToken.items[itemId]!.isFulfilled(): "Fulfilled items cannot be mint"
             FanTopToken.items[itemId]!.active: "Only active items can be mint"
@@ -363,6 +371,13 @@ pub contract FanTopToken: NonFungibleToken {
         return <- create NFT(refId: refId, data: data)
     }
 
+   access(account) fun setItemMintedCount(itemId: String, mintedCount: UInt32) {
+        pre {
+            FanTopToken.items.containsKey(itemId): "That itemId does not exist"
+        }
+        self.items[itemId]!.setMintedCount(mintedCount)
+    }
+
     access(self) let items: { String: Item }
 
     // Public
@@ -379,7 +394,8 @@ pub contract FanTopToken: NonFungibleToken {
         self.collectionStoragePath = /storage/FanTopTokenCollection
         self.collectionPublicPath = /public/FanTopTokenCollection
 
-        self.totalSupply = 0
+        // For recovery of redeploy
+        self.totalSupply = 18652
         self.items = {}
     }
 }
