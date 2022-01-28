@@ -1,6 +1,7 @@
 import FanTopPermissionV2a from "../../contracts/FanTopPermissionV2a.cdc"
 
-transaction(itemId: String, mintedCount: UInt32) {
+// arg: [["item-id-1", 1234], ... ]
+transaction(args: [[AnyStruct]]) {
     let owner: &FanTopPermissionV2a.Owner
 
     prepare(account: AuthAccount) {
@@ -9,6 +10,10 @@ transaction(itemId: String, mintedCount: UInt32) {
     }
 
     execute {
-        self.owner.setItemMintedCount(itemId: itemId, mintedCount: mintedCount)
+        for arg in args {
+            let itemId = arg[0] as! String
+            let mintedCount = arg[1] as! UInt32
+            self.owner.setItemMintedCount(itemId: itemId, mintedCount: mintedCount)
+        }
     }
 }

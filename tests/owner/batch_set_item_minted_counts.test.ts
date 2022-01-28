@@ -1,4 +1,4 @@
-import { address, string, uint32 } from "../__fixtures__/args"
+import { address, array, string, uint32 } from "../__fixtures__/args"
 import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import flowConfig from '../../flow.json'
 
@@ -12,6 +12,7 @@ beforeAll(async () => {
     emulator.transactions('transactions/admin/add_operator.cdc', address(OWNER_ADDRESS))
     emulator.createItem({ itemId: 'test-item-1', version: 1, limit: 10, metadata: {} })
     emulator.createItem({ itemId: 'test-item-2', version: 1, limit: 30, metadata: {} })
+    emulator.createItem({ itemId: 'test-item-3', version: 1, limit: 100, metadata: {} })
 })
 
 afterAll(() => {
@@ -19,7 +20,12 @@ afterAll(() => {
 })
 
 test('Owner can force mintedCount to be updated', () => {
-    emulator.transactions('transactions/owner/set_item_minted_count.cdc', string('test-item-1'), uint32(5))
+    emulator.transactions('transactions/owner/batch_set_item_minted_count.cdc',
+        array([
+            array([ string('test-item-1'), uint32(5)]),
+            array([ string('test-item-2'), uint32(15)])
+        ])
+    )
 
     expect(
         emulator.scripts('scripts/get_item_minted_count.cdc', string('test-item-1'))
@@ -30,20 +36,26 @@ test('Owner can force mintedCount to be updated', () => {
 
 test('mintedCount must be higher', () => {
     expect(() =>
-        emulator.transactions('transactions/owner/set_item_minted_count.cdc', string('test-item-1'), uint32(3))
+        emulator.transactions('transactions/owner/batch_set_item_minted_count.cdc',
+            array([array([ string('test-item-1'), uint32(3)])])
+        )
     ).toThrowError('error: pre-condition failed: mintedCount must be higher than before')
 })
 
 test('mintedCount must not exceed limit', () => {
-    emulator.transactions('transactions/owner/set_item_minted_count.cdc', string('test-item-1'), uint32(10))
+    emulator.transactions('transactions/owner/batch_set_item_minted_count.cdc',
+        array([array([ string('test-item-1'), uint32(10)])])
+    )
     expect(() =>
-        emulator.transactions('transactions/owner/set_item_minted_count.cdc', string('test-item-1'), uint32(11))
+        emulator.transactions('transactions/owner/batch_set_item_minted_count.cdc',
+            array([array([ string('test-item-1'), uint32(11)])])
+        )
     ).toThrowError('error: pre-condition failed: mintedCount must not exceed limit')
 })
 
 test('There is no unexpected change in mintedCount of item', () => {
     expect(
-        emulator.scripts('scripts/get_item_minted_count.cdc', string('test-item-2'))
+        emulator.scripts('scripts/get_item_minted_count.cdc', string('test-item-3'))
     ).toEqual(
         uint32(0)
     )
