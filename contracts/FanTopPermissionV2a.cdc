@@ -31,6 +31,10 @@ pub contract FanTopPermissionV2a {
             FanTopPermissionV2a.removePermission(address, role: role)
         }
 
+        pub fun setItemMintedCount(itemId: String, mintedCount: UInt32) {
+            FanTopToken.setItemMintedCount(itemId: itemId, mintedCount: mintedCount)
+        }
+
         priv init() {
             self.role = "owner"
         }

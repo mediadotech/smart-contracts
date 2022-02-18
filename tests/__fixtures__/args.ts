@@ -31,6 +31,10 @@ export function uint64<V = number>(value: V) {
     return { type: 'UInt64', value: typeof value == 'number' ? value.toString() : value }
 }
 
+export function uint64On18652(value: number) {
+    return { type: 'UInt64', value: (value + 18652).toString() }
+}
+
 export function ufix64<V = number>(value: V) {
     return { type: 'UFix64', value: typeof value == 'number' ? value.toFixed(2) : value }
 }

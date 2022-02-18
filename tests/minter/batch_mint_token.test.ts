@@ -1,4 +1,4 @@
-import { address, array, dicss, event, events, json, optional, resource, string, struct, uint32, uint64 } from "../__fixtures__/args"
+import { address, array, dicss, event, events, json, optional, resource, string, struct, uint32, uint64, uint64On18652 } from "../__fixtures__/args"
 import { createEmulator, FlowEmulator } from "../__fixtures__/emulator"
 import flowConfig from '../../flow.json'
 
@@ -46,47 +46,47 @@ test('Minter can mint multiple NFTs at once', async () => {
         authorizers: '[f8d6e0586b0a20c7]',
         events: events(
             event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
-                id: uint64(1),
+                id: uint64On18652(1),
                 refId: string('test-ref-1'),
                 serialNumber: uint32(1),
                 itemId: string('test-item-1'),
                 itemVersion: uint32(1)
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
-                id: uint64(1),
+                id: uint64On18652(1),
                 to: optional(address(USER1_ADDRESS))
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
-                id: uint64(2),
+                id: uint64On18652(2),
                 refId: string('test-ref-2'),
                 serialNumber: uint32(2),
                 itemId: string('test-item-1'),
                 itemVersion: uint32(1)
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
-                id: uint64(2),
+                id: uint64On18652(2),
                 to: optional(address(USER1_ADDRESS))
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
-                id: uint64(3),
+                id: uint64On18652(3),
                 refId: string('test-ref-3'),
                 serialNumber: uint32(1),
                 itemId: string('test-item-2'),
                 itemVersion: uint32(1)
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
-                id: uint64(3),
+                id: uint64On18652(3),
                 to: optional(address(USER1_ADDRESS))
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.TokenCreated', {
-                id: uint64(4),
+                id: uint64On18652(4),
                 refId: string('test-ref-4'),
                 serialNumber: uint32(2),
                 itemId: string('test-item-2'),
                 itemVersion: uint32(1)
             }),
             event('A.f8d6e0586b0a20c7.FanTopToken.Deposit', {
-                id: uint64(4),
+                id: uint64On18652(4),
                 to: optional(address(USER1_ADDRESS))
             })
         ),
@@ -102,7 +102,7 @@ test('Minter can mint multiple NFTs at once', async () => {
         array(expect.toIncludeSameMembers([
             optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
-                id: uint64(1),
+                id: uint64On18652(1),
                 refId: string('test-ref-1'),
                 data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(1),
@@ -115,7 +115,7 @@ test('Minter can mint multiple NFTs at once', async () => {
             })),
             optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
-                id: uint64(2),
+                id: uint64On18652(2),
                 refId: string('test-ref-2'),
                 data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(2),
@@ -128,7 +128,7 @@ test('Minter can mint multiple NFTs at once', async () => {
             })),
             optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
-                id: uint64(3),
+                id: uint64On18652(3),
                 refId: string('test-ref-3'),
                 data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(1),
@@ -139,7 +139,7 @@ test('Minter can mint multiple NFTs at once', async () => {
             })),
             optional(resource('A.f8d6e0586b0a20c7.FanTopToken.NFT', {
                 uuid: uint64(expect.any(String)),
-                id: uint64(4),
+                id: uint64On18652(4),
                 refId: string('test-ref-4'),
                 data: struct('A.f8d6e0586b0a20c7.FanTopToken.NFTData', {
                     serialNumber: uint32(2),
