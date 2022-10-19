@@ -1,3 +1,8 @@
+# Acrhived repository
+
+This repository has been archived.
+You can view the latest contract [here](https://flowscan.org/contract/A.86185fba578bc773.FanTopToken/overview).
+
 # FanTop contracts
 
 ## Introduction
